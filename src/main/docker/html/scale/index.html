@@ -239,7 +239,7 @@ limitations under the License.
 
 			</div>
 			<div class="row">
-				<div class="col-sm-6 col-md-4" ng-repeat="url in scale.portalURLs">
+				<div class="col-sm-6 col-md-4" ng-repeat="url in scale.portalURLs track by $index">
 					<div class="thumbnail" style="background:#eeeeee;">
 						<a href="{{url.url}}" target="{{url.label}}"><img
 							src="data:image/png;base64,{{url.icon}}" alt="{{url.label}}"/></a>

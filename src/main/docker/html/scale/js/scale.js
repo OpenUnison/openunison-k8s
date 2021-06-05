@@ -202,6 +202,7 @@ limitations under the License.
       this.currentReport = {};
       this.reportData = {};
       this.portalOrgs = [];
+      this.portalURLs = [];
 
 
       this.rowNumber = 0;
@@ -493,17 +494,20 @@ limitations under the License.
       };
 
       this.selectPortalOrgs = function(node) {
-        this.portalCurrentNode = node;
+        if ($scope.scale.config.showPortalOrgs) {
+          this.portalCurrentNode = node;
+          
+          $http.get('main/urls/org/' + encodeURIComponent(node.id)).then(
+            function(response) {
+              
+              $scope.scale.portalURLs = response.data;
 
-        $http.get('main/urls/org/' + encodeURIComponent(node.id)).then(
-          function(response) {
-            $scope.scale.portalURLs = response.data;
+            },
+            function(response) {
 
-          },
-          function(response) {
-
-          }
-        );
+            }
+          );
+        }
 
       };
 
@@ -943,6 +947,8 @@ limitations under the License.
     			}, 1000 * 60
     	);  
     	  
+        $scope.scale.portalURLs = [];
+
         $http.get('main/config').
           then(function(response){
             $scope.scale.config = response.data;
@@ -965,21 +971,26 @@ limitations under the License.
                     $scope.scale.reportOrgsExpandedNodes = [$scope.scale.reportOrgs[0]];
                     $scope.scale.selectReportOrg($scope.scale.reportOrgsSelectedNode);
 
-                    if ($scope.scale.config.showPortalOrgs) {
-                      $scope.scale.portalOrgs = [$scope.scale.cleanPortalOrgs(JSON.parse(JSON.stringify(response.data)))];
-                      $scope.scale.portalOrgsSelectedNode = $scope.scale.portalOrgs[0];
-                      $scope.scale.portalOrgsExpandedNodes = [$scope.scale.portalOrgs[0]];
-                      $scope.scale.selectPortalOrgs($scope.scale.portalOrgsSelectedNode);
-
-                    }
+                    
 
                     $http.get('main/approvals').
                       then(function(response) {
                           $scope.scale.approvals = response.data.approvals;
 
 
-                          if (! $scope.scale.config.showPortalOrgs) {
-                            $http.get('main/urls').then(
+                          
+
+                            $scope.scale.portalOrgs = [JSON.parse(JSON.stringify(response.data))];
+                            $scope.scale.portalOrgsSelectedNode = $scope.scale.portalOrgs[0];
+                            $scope.scale.portalOrgsExpandedNodes = [$scope.scale.portalOrgs[0]];
+                            $scope.scale.selectPortalOrgs($scope.scale.portalOrgsSelectedNode);
+
+                            var urlsUrl = 'main/urls';
+                            if ($scope.scale.config.showPortalOrgs) {
+                              urlsUrl = urlsUrl + '/org/' + $scope.scale.portalOrgsSelectedNode.uuid; 
+                            }
+
+                            $http.get(urlsUrl).then(
                               function(response) {
                                 $scope.scale.portalURLs = response.data;
 
@@ -992,10 +1003,7 @@ limitations under the License.
                                 //$scope.$apply();
                               }
                             );
-                          } else {
-                            $scope.scale.setSessionLoadedComplete();
-                            //$scope.$apply();
-                          }
+                          
 
                       },
                       function(response) {
