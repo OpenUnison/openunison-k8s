@@ -1,0 +1,11 @@
+div.row.ng-scope.row-even {
+  margin-right: -15px;
+  margin-left: -15px;
+  background-color:#eee;
+}
+
+div.row.ng-scope.row-odd {
+  margin-right: -15px;
+  margin-left: -15px;
+  background-color:#f9f9f9;
+}
