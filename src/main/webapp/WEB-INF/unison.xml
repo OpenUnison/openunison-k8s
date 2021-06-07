@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tremoloConfig xmlns="http://www.tremolosecurity.com/tremoloConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.tremolosecurity.com/tremoloConfig tremoloConfig.xsd">
+  <applications openSessionCookieName="openSession" openSessionTimeout="#[SESSION_INACTIVITY_TIMEOUT_SECONDS]" openSessionSecure="true" openSessionHttpOnly="true">
+    <dynamicApplications enabled="true" className="com.tremolosecurity.proxy.dynamicconfiguration.LoadApplicationsFromK8s">
+      <params name="k8starget" value="k8s" />
+      <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+    </dynamicApplications>
+    <application name="CheckAlive" azTimeoutMillis="30000">
+      <urls>
+        <url regex="false" authChain="anon" overrideHost="true" overrideReferer="true">
+          <host>*</host>
+          <filterChain>
+            <filter class="com.tremolosecurity.prelude.filters.LoginTest">
+              <param name="logoutURI" value="/logout" />
+              <param name="jspURI" value="/auth/forms/loginTestSimple.jsp" />
+            </filter>
+          </filterChain>
+          <uri>/check_alive</uri>
+          <results>
+            <azSuccess></azSuccess>
+          </results>
+          <azRules>
+            <rule scope="dn" constraint="o=Tremolo" />
+          </azRules>
+        </url>
+
+      </urls>
+      <cookieConfig>
+        <sessionCookieName>checkalive</sessionCookieName>
+        <domain>*</domain>
+        <logoutURI>/check_alive</logoutURI>
+        <keyAlias>session-unison</keyAlias>
+        <secure>true</secure>
+        <httpOnly>true</httpOnly>
+        <timeout>1</timeout>
+        <scope>-1</scope>
+        <sameSite>None</sameSite>
+      </cookieConfig>
+    </application>
+
+  </applications>
+  <myvdConfig>#[MYVD_CONFIG_PATH]</myvdConfig>
+  <authMechs>
+    <dynamicAuthMechs enabled="true" className="com.tremolosecurity.proxy.dynamicconfiguration.LoadAuthMechsFromK8s">
+      <params name="k8starget" value="k8s" />
+      <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+    </dynamicAuthMechs>
+    <mechanism name="anonymous">
+      <uri>/auth/anon</uri>
+      <className>com.tremolosecurity.proxy.auth.AnonAuth</className>
+      <init>
+        <param name="userName" value="uid=Anonymous" />
+        <param name="role" value="Users" />
+      </init>
+      <params></params>
+    </mechanism>
+  </authMechs>
+  <authChains>
+    <dynamicAuthChains enabled="true" className="com.tremolosecurity.proxy.dynamicconfiguration.LoadAuthChainsFromK8s">
+      <params name="k8starget" value="k8s" />
+      <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+    </dynamicAuthChains>
+    <chain name="anon" level="0">
+      <authMech>
+        <name>anonymous</name>
+        <required>required</required>
+        <params></params>
+      </authMech>
+    </chain>
+  </authChains>
+  <resultGroups>
+    <dynamicResultGroups enabled="true" className="com.tremolosecurity.proxy.dynamicconfiguration.LoadResultGroupsFromK8s">
+      <params name="k8starget" value="k8s" />
+      <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+    </dynamicResultGroups>
+  </resultGroups>
+  <customAzRules>
+    <dynamicCustomAuthorizations enabled="true" className="com.tremolosecurity.proxy.dynamicconfiguration.LoadAuthorizationsFromK8s">
+      <params name="k8starget" value="k8s" />
+      <params name="namespace" value="openunison" />
+    </dynamicCustomAuthorizations>
+  </customAzRules>
+  <keyStorePath>/etc/openunison/unisonKeyStore.p12</keyStorePath>
+  <keyStorePassword>#[unisonKeystorePassword]</keyStorePassword>
+  <provisioning>
+    <targets>
+      <dynamicTargets enabled="true" className="com.tremolosecurity.provisioning.targets.LoadTargetsFromK8s">
+        <params name="k8starget" value="k8s" />
+        <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+
+      </dynamicTargets>
+      <target name="k8s" className="com.tremolosecurity.unison.openshiftv3.OpenShiftTarget">
+        <params>
+          <param name="url" value="" />
+          <param name="userName" value="" />
+          <param name="password" value="" />
+          <param name="token" value="" />
+          <param name="useToken" value="true" />
+          <param name="tokenType" value="#[K8S_TOKEN_TYPE]" />
+          <param name="tokenPath" value="/var/run/secrets/tokens/ou-token" />
+          <param name="certPath" value="/var/run/secrets/tokens/ca.crt" />
+          <param name="label" value="#[K8S_DEPLOYMENT_NAME:Local Deployment]" />
+        </params>
+      </target>
+    </targets>
+    <workflows>
+      <dynamicWorkflows enabled="true" className="com.tremolosecurity.provisioning.workflows.LoadWorkflowsFromK8s">
+        <params name="k8starget" value="k8s" />
+        <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+
+      </dynamicWorkflows>
+
+    </workflows>
+    <approvalDB useWhen="OPENUNISON_PROVISIONING_ENABLED=true">
+      <hibernateDialect>#[OU_HIBERNATE_DIALECT]</hibernateDialect>
+      <driver>#[OU_JDBC_DRIVER]</driver>
+      <url>#[OU_JDBC_URL]</url>
+      <user>#[OU_JDBC_USER]</user>
+      <password>#[OU_JDBC_PASSWORD]</password>
+      <maxConns>10</maxConns>
+      <maxIdleConns>10</maxIdleConns>
+      <userIdAttribute>uid</userIdAttribute>
+      <approverAttributes>
+        <value>uid</value>
+        <value>givenname</value>
+        <value>sn</value>
+        <value>mail</value>
+      </approverAttributes>
+      <userAttributes>
+        <value>uid</value>
+        <value>givenname</value>
+        <value>sn</value>
+        <value>mail</value>
+      </userAttributes>
+      <enabled>true</enabled>
+      <smtpHost>#[SMTP_HOST]</smtpHost>
+      <smtpPort>#[SMTP_PORT]</smtpPort>
+      <smtpUser>#[SMTP_USER]</smtpUser>
+      <smtpPassword>#[SMTP_PASSWORD]</smtpPassword>
+      <smtpSubject>Awaiting Approvals</smtpSubject>
+      <smtpFrom>#[SMTP_FROM]</smtpFrom>
+      <smtpTLS>#[SMTP_TLS]</smtpTLS>
+      <encryptionKey>session-unison</encryptionKey>
+      <smtpUseSOCKSProxy>false</smtpUseSOCKSProxy>
+      <smtpSOCKSProxyHost></smtpSOCKSProxyHost>
+      <smtpSOCKSProxyPort>0</smtpSOCKSProxyPort>
+      <smtpLocalhost>localhost</smtpLocalhost>
+      <validationQuery>#[OU_JDBC_VALIDATION]</validationQuery>
+    </approvalDB>
+    <org name="Kubernetes Enterprise" description="Kubernetes enterprise deployment" uuid="B158BD40-0C1B-11E3-8FFD-0800200C9A66">
+      <dynamicOrgs enabled="true" className="com.tremolosecurity.provisioning.orgs.LoadOrgsFromK8s">
+        <params name="k8starget" value="k8s" />
+        <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+
+      </dynamicOrgs>
+
+
+      <azRules />
+    </org>
+    <queueConfig />
+    <portal>
+      <dynamicUrls enabled="true" className="com.tremolosecurity.provisioning.portal.LoadUrlsFromK8s">
+        <params name="k8starget" value="k8s" />
+        <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+
+      </dynamicUrls>
+
+
+    </portal>
+    <scheduler useDB="true" threadCount="3" instanceLabel="local" instanceIPMask="#[OU_QUARTZ_MASK]" useWhen="OPENUNISON_PROVISIONING_ENABLED=true">
+      <dynamicJobs enabled="true" className="com.tremolosecurity.provisioning.jobs.LoadJobsFromK8s">
+        <params name="k8starget" value="k8s" />
+        <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+
+      </dynamicJobs>
+      <scheduleDB delegateClassName="#[OU_QUARTZ_DIALECT]" driver="#[OU_JDBC_DRIVER]" url="#[OU_JDBC_URL]" user="#[OU_JDBC_USER]" password="#[OU_JDBC_PASSWORD]" maxConnections="5" validationQuery="#[OU_JDBC_VALIDATION]" />
+
+
+    </scheduler>
+    <scheduler useDB="false" threadCount="3" instanceLabel="local" instanceIPMask="#[OU_QUARTZ_MASK]" useWhen="OPENUNISON_PROVISIONING_ENABLED=false">
+      <dynamicJobs enabled="true" className="com.tremolosecurity.provisioning.jobs.LoadJobsFromK8s">
+        <params name="k8starget" value="k8s" />
+        <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+      </dynamicJobs>
+    </scheduler>
+    <listeners useWhen="OPENUNISON_PROVISIONING_ENABLED=true">
+      <dynamicListeners enabled="true" className="com.tremolosecurity.provisioning.listeners.LoadQueueListenersFromK8s">
+        <params name="k8starget" value="k8s" />
+        <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+
+      </dynamicListeners>
+    </listeners>
+    <reports useWhen="OPENUNISON_PROVISIONING_ENABLED=true">
+      <dynamicReports enabled="true" className="com.tremolosecurity.provisioning.reports.LoadReportsFromK8s">
+        <params name="k8starget" value="k8s" />
+        <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
+
+      </dynamicReports>
+    </reports>
+
+
+  </provisioning>
+</tremoloConfig>

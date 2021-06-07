@@ -1,0 +1,156 @@
+<workflow  name="NewK8SNamespace" label="New Kubernetes Namespace" description="Creates a new kubernetes namespace and associated groups to manage approvals" inList="false" orgid="B158BD40-0C1B-11E3-8FFD-0800200C9A66">
+    <dynamicConfiguration dynamic="false" />
+    <tasks>
+        <customTask className="com.tremolosecurity.provisioning.customTasks.CopyFromUserToRequest">
+            <param name="attribute" value="nameSpace"/>
+            <param name="keepInUser" value="false"/>
+        </customTask>
+        <customTask className="com.tremolosecurity.provisioning.customTasks.LoadAttributes">
+            <param name="nameAttr" value="uid"/>
+            <param name="name" value="givenname"/>
+            <param name="name" value="sn"/>
+            <param name="name" value="mail"/>
+        </customTask>
+        <approval label="Create New Namespace - $nameSpace$">
+            <onSuccess>
+                <customTask className="com.tremolosecurity.provisioning.customTasks.AddGroupToStore">
+                    <param name="target" value="jitdb"/>
+                    <param name="name" value="approvers-k8s-$nameSpace$"/>
+                    <param name="attributes" value="unison.group.create.sql=INSERT INTO localGroups (name,description) VALUES (?,?)"/>
+                    <param name="attributes" value="unison.group.create.param.2=Approve access to $nameSpace$" />
+                </customTask>
+                <customTask className="com.tremolosecurity.provisioning.customTasks.AddGroupToStore">
+                    <param name="target" value="jitdb"/>
+                    <param name="name" value="k8s-namespace-administrators-$nameSpace$"/>
+                    <param name="attributes" value="unison.group.create.sql=INSERT INTO localGroups (name,description) VALUES (?,?)"/>
+                    <param name="attributes" value="unison.group.create.param.2=Manage kubernetes namespace $nameSpace$" />
+                </customTask>
+                <customTask className="com.tremolosecurity.provisioning.customTasks.AddGroupToStore">
+                    <param name="target" value="jitdb"/>
+                    <param name="name" value="k8s-namespace-viewer-$nameSpace$"/>
+                    <param name="attributes" value="unison.group.create.sql=INSERT INTO localGroups (name,description) VALUES (?,?)"/>
+                    <param name="attributes" value="unison.group.create.param.2=View kubernetes namespace $nameSpace$" />
+                </customTask>
+                <mapping strict="true">
+                    <onSuccess>
+                        <addGroup name="approvers-k8s-$nameSpace$" remove="false"/>
+                        <addGroup name="k8s-namespace-administrators-$nameSpace$" remove="false"/>
+                        <provision sync="false" target="jitdb" setPassword="false" onlyPassedInAttributes="false">
+                            <attributes>
+                              <value>uid</value>
+                            </attributes>
+                        </provision>
+                    </onSuccess>
+                    <onFailure/>
+                    <map>
+                        <mapping targetAttributeName="uid" targetAttributeSource="uid" sourceType="user"/>
+                    </map>
+                </mapping>
+
+                <customTask className="com.tremolosecurity.provisioning.tasks.CreateK8sObject">
+                    <param name="targetName" value="k8s"/>
+                    <param name="template" >
+<![CDATA[ 
+{
+    "kind": "Namespace",
+    "apiVersion": "v1",
+    "metadata": {
+      "name": "$nameSpace$",
+      "labels": {
+        "name": "$nameSpace$"
+      }
+    }
+  }
+]]>
+
+                    </param>
+                    <param name="kind" value="Namespace" />
+                    <param name="url" value="/api/v1/namespaces" />
+                </customTask>
+
+
+
+                <customTask className="com.tremolosecurity.provisioning.tasks.CreateK8sObject">
+                    <param name="targetName" value="k8s"/>
+                    <param name="template" >
+<![CDATA[ 
+{
+    "kind": "RoleBinding",
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "metadata": {
+      "name": "admins-binding",
+      "namespace": "$nameSpace$"
+    },
+    "subjects": [
+      {
+        "kind": "Group",
+        "name": "k8s-namespace-administrators-$nameSpace$",
+        "apiGroup": "rbac.authorization.k8s.io"
+      }
+    ],
+    "roleRef": {
+      "kind": "ClusterRole",
+      "name": "admin",
+      "apiGroup": "rbac.authorization.k8s.io"
+    }
+  }
+]]>
+                    </param>
+                    <param name="kind" value="RoleBinding" />
+                    <param name="url" value="/apis/rbac.authorization.k8s.io/v1/namespaces/$nameSpace$/rolebindings" />
+                </customTask>
+
+
+
+                <customTask className="com.tremolosecurity.provisioning.tasks.CreateK8sObject">
+                    <param name="targetName" value="k8s"/>
+                    <param name="template" >
+<![CDATA[ 
+{
+    "kind": "RoleBinding",
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "metadata": {
+      "name": "viewers-binding",
+      "namespace": "$nameSpace$"
+    },
+    "subjects": [
+      {
+        "kind": "Group",
+        "name": "k8s-namespace-viewer-$nameSpace$",
+        "apiGroup": "rbac.authorization.k8s.io"
+      }
+    ],
+    "roleRef": {
+      "kind": "ClusterRole",
+      "name": "view",
+      "apiGroup": "rbac.authorization.k8s.io"
+    }
+  }
+]]>
+                    </param>
+                    <param name="kind" value="RoleBinding" />
+                    <param name="url" value="/apis/rbac.authorization.k8s.io/v1/namespaces/$nameSpace$/rolebindings" />
+                </customTask>
+
+                <notifyUser subject="Namespace created" mailAttrib="mail">
+                    <msg>Your namespace has been created</msg>
+                </notifyUser>
+            </onSuccess>
+            <onFailure/>
+            <emailTemplate>A new namespace has been requested</emailTemplate>
+            <approvers>
+                <rule scope="group" constraint="cn=administrators,ou=groups,ou=shadow,o=Tremolo"/>
+            </approvers>
+            <mailAttr>mail</mailAttr>
+            <failureEmailSubject>Project not approved</failureEmailSubject>
+            <failureEmailMsg>Because:&#xD;
+&#xD;
+${reason}</failureEmailMsg>
+            <escalationPolicy>
+                <escalationFailure action="leave">
+                    <azRules/>
+                </escalationFailure>
+            </escalationPolicy>
+        </approval>
+    </tasks>
+</workflow>

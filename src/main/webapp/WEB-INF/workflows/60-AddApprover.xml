@@ -1,0 +1,72 @@
+<workflow name="AddApprover" label="Add Approver for $groupName$" description="Add an approver" inList="true" orgid="f9923cb2-fcc3-4ed0-9b87-f99fa4445344">
+    <dynamicConfiguration dynamic="true" className="com.tremolosecurity.provisioning.dynamicwf.LDAPDynaicWorkflows">
+        <param name="descriptionAttribute" value="description"/>
+        <param name="approverAttribute" value="cn"/>
+        <param name="groupNameAttribute" value="cn"/>
+        <param name="searchFilter" value="(&amp;(objectClass=groupOfUniqueNames)(cn=*approver*))"/>
+        <param name="searchBase" value="ou=groups,ou=shadow,o=Tremolo"/>
+    </dynamicConfiguration>
+    <tasks>
+        <customTask className="com.tremolosecurity.provisioning.customTasks.LoadAttributes">
+            <param name="nameAttr" value="uid"/>
+            <param name="name" value="givenname"/>
+            <param name="name" value="sn"/>
+            <param name="name" value="mail"/>
+        </customTask>
+        <approval label="Approve access to $groupName$">
+            <onSuccess>
+              <mapping  strict="true">
+                <map>
+                  <mapping targetAttributeName="sub" sourceType="user" targetAttributeSource="uid"/>
+                  <mapping targetAttributeName="mail" sourceType="user" targetAttributeSource="mail"/>
+                </map>
+                <onSuccess>
+                <addGroup name="$groupName$" remove="false"/>
+                <provision sync="false" target="jitdb" setPassword="false" onlyPassedInAttributes="false">
+                    <attributes>
+                        <value>sub</value>
+                    </attributes>
+                </provision>
+                <notifyUser subject="Approval access to $groupName$ approved" mailAttrib="mail">
+                    <msg>Your access has been approved, please login</msg>
+                </notifyUser>
+              </onSuccess>
+            </mapping>
+            </onSuccess>
+            <onFailure>
+              <mapping  strict="true">
+                <map>
+                  <mapping targetAttributeName="sub" sourceType="user" targetAttributeSource="uid"/>
+                  <mapping targetAttributeName="mail" sourceType="user" targetAttributeSource="mail"/>
+                </map>
+                <onSuccess>
+                <customTask className="com.tremolosecurity.provisioning.customTasks.LoadGroupsFromTarget">
+                    <param name="target" value="jitdb"/>
+                    <param name="nameAttr" value="sub"/>
+                </customTask>
+                <addGroup name="$groupName$" remove="true"/>
+                <provision sync="true" target="jitdb" setPassword="false" onlyPassedInAttributes="false">
+                    <attributes>
+                        <value>sub</value>
+                    </attributes>
+                </provision>
+              </onSuccess>
+            </mapping>
+            </onFailure>
+            <emailTemplate>New open request</emailTemplate>
+            <approvers>
+                <rule scope="group" constraint="cn=$groupName$,ou=groups,ou=shadow,o=Tremolo"/>
+            </approvers>
+            <mailAttr>mail</mailAttr>
+            <failureEmailSubject>Request denied</failureEmailSubject>
+            <failureEmailMsg>for reason:&#xD;
+&#xD;
+${reason}</failureEmailMsg>
+            <escalationPolicy>
+                <escalationFailure action="leave">
+                    <azRules/>
+                </escalationFailure>
+            </escalationPolicy>
+        </approval>
+    </tasks>
+</workflow>

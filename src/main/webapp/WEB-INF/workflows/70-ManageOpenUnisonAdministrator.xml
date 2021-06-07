@@ -1,0 +1,66 @@
+<workflow name="ManageOpenUnisonAdministrator" label="Add or Remove an OpenUnison administrator" description="Manages the root administrator group for OpenUnison" inList="true" orgid="241f4539-efd9-4e18-8a59-649bf1b79cbe">
+    <dynamicConfiguration dynamic="false"  />
+    <tasks>
+        <customTask className="com.tremolosecurity.provisioning.customTasks.LoadAttributes">
+            <param name="nameAttr" value="uid"/>
+            <param name="name" value="givenname"/>
+            <param name="name" value="sn"/>
+            <param name="name" value="mail"/>
+        </customTask>
+        <approval label="Approve access to OpenUnison Administrator">
+            <onSuccess>
+              <mapping  strict="true">
+                <map>
+                  <mapping targetAttributeName="sub" sourceType="user" targetAttributeSource="uid"/>
+                  <mapping targetAttributeName="mail" sourceType="user" targetAttributeSource="mail"/>
+                </map>
+                <onSuccess>
+                <addGroup name="administrators" remove="false"/>
+                <provision sync="false" target="jitdb" setPassword="false" onlyPassedInAttributes="false">
+                    <attributes>
+                        <value>sub</value>
+                    </attributes>
+                </provision>
+                <notifyUser subject="Approval access to OpenUnison administrator approved" mailAttrib="mail">
+                    <msg>Your access has been approved, please login</msg>
+                </notifyUser>
+              </onSuccess>
+            </mapping>
+            </onSuccess>
+            <onFailure>
+              <mapping  strict="true">
+                <map>
+                  <mapping targetAttributeName="sub" sourceType="user" targetAttributeSource="uid"/>
+                  <mapping targetAttributeName="mail" sourceType="user" targetAttributeSource="mail"/>
+                </map>
+                <onSuccess>
+                <customTask className="com.tremolosecurity.provisioning.customTasks.LoadGroupsFromTarget">
+                    <param name="target" value="jitdb"/>
+                    <param name="nameAttr" value="sub"/>
+                </customTask>
+                <addGroup name="administrators" remove="true"/>
+                <provision sync="true" target="jitdb" setPassword="false" onlyPassedInAttributes="false">
+                    <attributes>
+                        <value>sub</value>
+                    </attributes>
+                </provision>
+              </onSuccess>
+            </mapping>
+            </onFailure>
+            <emailTemplate>New open request</emailTemplate>
+            <approvers>
+                <rule scope="group" constraint="cn=administrators,ou=groups,ou=shadow,o=Tremolo"/>
+            </approvers>
+            <mailAttr>mail</mailAttr>
+            <failureEmailSubject>Request denied</failureEmailSubject>
+            <failureEmailMsg>for reason:&#xD;
+&#xD;
+${reason}</failureEmailMsg>
+            <escalationPolicy>
+                <escalationFailure action="leave">
+                    <azRules/>
+                </escalationFailure>
+            </escalationPolicy>
+        </approval>
+    </tasks>
+</workflow>

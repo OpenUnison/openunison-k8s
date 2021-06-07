@@ -1,0 +1,8 @@
+
+
+
+openunison:
+  replicas: 1
+
+  html:
+    image: docker.lab.tremolo.dev/nginx

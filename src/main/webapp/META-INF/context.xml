@@ -1,0 +1,4 @@
+<Context>
+  <Environment name="unisonConfigPath" value="WEB-INF/unison.xml" type="java.lang.String"/>
+  <Environment name="unisonServiceConfigPath" value="WEB-INF/unisonService.props" type="java.lang.String"/>
+</Context>

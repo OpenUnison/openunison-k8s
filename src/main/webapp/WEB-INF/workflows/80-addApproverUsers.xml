@@ -1,0 +1,23 @@
+<workflow name="addApproverUsers" label="Add approver users" description="Add new approval users" inList="false" orgid="63ada052-881e-4685-834d-dd48a3aa4bb4">
+    <dynamicConfiguration dynamic="false" className="com.tremolosecurity.provisioning.dynamicwf.LDAPDynaicWorkflows">
+        <param name="descriptionAttribute" value=""/>
+        <param name="approverAttribute" value=""/>
+        <param name="groupNameAttribute" value=""/>
+        <param name="searchFilter" value=""/>
+        <param name="searchBase" value=""/>
+    </dynamicConfiguration>
+    <tasks>
+        <mapping  strict="true">
+          <map>
+            <mapping targetAttributeName="sub" sourceType="user" targetAttributeSource="uid"/>
+          </map>
+            <onSuccess>
+                <provision sync="false" target="jitdb" setPassword="false" onlyPassedInAttributes="false">
+                    <attributes>
+                        <value>sub</value>
+                    </attributes>
+                </provision>
+            </onSuccess>
+        </mapping>
+    </tasks>
+</workflow>

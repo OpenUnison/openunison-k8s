@@ -1,0 +1,72 @@
+<workflow name="ClusterAdmin" label="Cluster Administrator" description="Request this role to become a cluster administrator" inList="true" orgid="441a2bf1-3e47-4d40-a994-99faa15f997a" useWhen="LEGACY=true">
+    <dynamicConfiguration dynamic="false" className="com.tremolosecurity.provisioning.dynamicwf.LDAPDynaicWorkflows">
+        <param name="descriptionAttribute" value=""/>
+        <param name="approverAttribute" value=""/>
+        <param name="groupNameAttribute" value=""/>
+        <param name="searchFilter" value=""/>
+        <param name="searchBase" value=""/>
+    </dynamicConfiguration>
+    <tasks>
+        <customTask className="com.tremolosecurity.provisioning.customTasks.LoadAttributes">
+            <param name="nameAttr" value="uid"/>
+            <param name="name" value="givenname"/>
+            <param name="name" value="sn"/>
+            <param name="name" value="mail"/>
+        </customTask>
+        <approval label="Approve Access for Kubernetes Cluster Administrator">
+            <onSuccess>
+              <mapping  strict="true">
+                <map>
+                  <mapping targetAttributeName="sub" sourceType="user" targetAttributeSource="uid"/>
+                  <mapping targetAttributeName="mail" sourceType="user" targetAttributeSource="mail"/>
+                </map>
+                <onSuccess>
+                <addGroup name="k8s-cluster-administrators" remove="false"/>
+                <provision sync="false" target="jitdb" setPassword="false" onlyPassedInAttributes="false">
+                    <attributes>
+                      <value>sub</value>
+                    </attributes>
+                </provision>
+                <notifyUser subject="Access to Cluster Admin Approved" mailAttrib="mail">
+                    <msg>Your access has been approved.</msg>
+                </notifyUser>
+              </onSuccess>
+            </mapping>
+            </onSuccess>
+            <onFailure>
+              <mapping  strict="true">
+                <map>
+                  <mapping targetAttributeName="sub" sourceType="user" targetAttributeSource="uid"/>
+                  <mapping targetAttributeName="mail" sourceType="user" targetAttributeSource="mail"/>
+                </map>
+                <onSuccess>
+                <customTask className="com.tremolosecurity.provisioning.customTasks.LoadGroupsFromTarget">
+                    <param name="nameAttr" value="sub"/>
+                    <param name="target" value="jitdb"/>
+                </customTask>
+                <addGroup name="k8s-cluster-administrators" remove="true"/>
+                <provision sync="true" target="jitdb" setPassword="false" onlyPassedInAttributes="false">
+                    <attributes>
+                      <value>sub</value>
+                    </attributes>
+                </provision>
+              </onSuccess>
+            </mapping>
+            </onFailure>
+            <emailTemplate>There is an open request for cluster administration</emailTemplate>
+            <approvers>
+                <rule scope="group" constraint="cn=administrators,ou=groups,ou=shadow,o=Tremolo"/>
+            </approvers>
+            <mailAttr>mail</mailAttr>
+            <failureEmailSubject>Access Denied</failureEmailSubject>
+            <failureEmailMsg>For this reason:&#xD;
+&#xD;
+${reason}</failureEmailMsg>
+            <escalationPolicy>
+                <escalationFailure action="leave">
+                    <azRules/>
+                </escalationFailure>
+            </escalationPolicy>
+        </approval>
+    </tasks>
+</workflow>
