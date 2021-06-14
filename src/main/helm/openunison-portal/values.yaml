@@ -1,8 +1,108 @@
+network:
+  openunison_host: "k8sou.apps.domain.int"
+  dashboard_host: "k8sdb.apps.domain.int"
+  api_server_host: "k8sapi.apps.domain.int"
+  session_inactivity_timeout_seconds: 900
+  k8s_url: https://k8s-installer-master.tremolo.lan:6443
+  createIngressCertificate: true
+  ingress_type: nginx
+  ingress_annotations:
+    kubernetes.io/ingress.class: nginx
+  
 
+cert_template:
+  ou: "Kubernetes"
+  o: "MyOrg"
+  l: "My Cluster"
+  st: "State of Cluster"
+  c: "MyCountry"
 
+image: "docker.io/tremolosecurity/openunison-k8s-activedirectory:latest"
+amq_image: "docker.io/tremolosecurity/activemq-docker:latest"
+myvd_config_path: "WEB-INF/myvd.conf"
+k8s_cluster_name: kubernetes
+enable_impersonation: true
+
+dashboard:
+  namespace: "kubernetes-dashboard"
+  cert_name: "kubernetes-dashboard-certs"
+  label: "k8s-app=kubernetes-dashboard"
+  service_name: kubernetes-dashboard
+certs:
+  use_k8s_cm: false
+
+#trusted_certs: []
+
+trusted_certs:
+  - name: ldaps
+    pem_b64: SDFGSDFGHDFHSDFGSDGSDFGDS
+  - name: ldaps2
+    pem_b64: SDFGSDFGDHSDRT#$%#$%SDSDTF
+
+active_directory:
+  base: cn=users,dc=ent2k12,dc=domain,dc=com
+  host: "192.168.2.75"
+  port: "636"
+  bind_dn: "cn=Administrator,cn=users,dc=ent2k12,dc=domain,dc=com"
+  con_type: ldaps
+  srv_dns: "false"
+
+database:
+  hibernate_dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  quartz_dialect: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+  driver: com.mysql.jdbc.Driver
+  url: jdbc:mysql://dbs.tremolo.lan:3308/unison
+  user: root
+  validation: SELECT 1
+
+smtp:
+  host: smtp.gmail.com
+  port: 587
+  user: donotreply@domain.com
+  from: donotreply@domain.com
+  tls: true
+
+monitoring:
+  prometheus_service_account: system:serviceaccount:monitoring:prometheus-k8s
+
+impersonation:
+  use_jetstack: false
+  jetstack_oidc_proxy_image: quay.io/jetstack/kube-oidc-proxy:v0.3.0
+  explicit_certificate_trust: true
+  ca_secret_name: ou-tls-certificate
+
+network_policies:
+  enabled: true
+  ingress:
+    enabled: true
+    labels:
+      app.kubernetes.io/name: ingress-nginx
+  monitoring:
+    enabled: true
+    labels:
+      app.kubernetes.io/name: monitoring
+  apiserver:
+    enabled: true
+    labels:
+      app.kubernetes.io/name: kube-system
+
+services:
+  enable_tokenrequest: false
+  token_request_audience: api
+  token_request_expiration_seconds: 600
+  node_selectors: []
+  pullSecret: ""
+  liveness_probe:
+  - /usr/local/openunison/bin/check_alive.py
+  readiness_probe:
+  - /usr/local/openunison/bin/check_alive.py
+  - "https://127.0.0.1:8443/auth/idp/k8sIdp/.well-known/openid-configuration"
+  - "issuer"
 
 openunison:
   replicas: 1
-
+  non_secret_data: {}
+  secrets: []
   html:
     image: docker.lab.tremolo.dev/nginx
+  enable_provisioning: false

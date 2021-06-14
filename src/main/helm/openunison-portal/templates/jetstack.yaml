@@ -1,0 +1,125 @@
+{{ if and (eq .Values.enable_impersonation true) (eq .Values.impersonation.use_jetstack true)  }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kube-oidc-proxy-{{ .Release.Name }}
+  name: kube-oidc-proxy-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.openunison.replicas }}
+  selector:
+    matchLabels:
+      app: kube-oidc-proxy-{{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: kube-oidc-proxy-{{ .Release.Name }}
+    spec:
+      serviceAccountName: openunison-{{ .Release.Name }}
+      containers:
+      - image: {{ .Values.impersonation.jetstack_oidc_proxy_image}}
+        ports:
+        - containerPort: 8443
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        name: kube-oidc-proxy-{{ .Release.Name }}
+        command: ["kube-oidc-proxy"]
+        args:
+          - "--secure-port=8443"
+          - "--tls-cert-file=/etc/oidc/tls/crt.pem"
+          - "--tls-private-key-file=/etc/oidc/tls/key.pem"
+          - "--oidc-client-id=kubernetes"
+          - "--oidc-issuer-url=https://{{ .Values.network.openunison_host }}/auth/idp/k8sIdp"
+          - "--oidc-username-claim=sub"
+          - "--oidc-groups-claim=groups"
+          {{ if .Values.impersonation.explicit_certificate_trust }}
+          - "--oidc-ca-file=/etc/oidc/oidc-ca.pem"
+          {{ end }}
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 10001
+          runAsGroup: 10001
+          allowPrivilegeEscalation: false
+        volumeMounts:
+          {{ if .Values.impersonation.explicit_certificate_trust }}
+          - name: kube-oidc-proxy-config
+            mountPath: /etc/oidc
+            readOnly: true
+          {{ end }}
+          - name: kube-oidc-proxy-tls
+            mountPath: /etc/oidc/tls
+            readOnly: true
+        {{ if .Values.impersonation.resources }}
+        resources:
+          {{ if .Values.impersonation.resources.requests }}
+          requests:
+            {{ if .Values.impersonation.resources.requests.memory }}
+            memory: {{ quote .Values.impersonation.resources.requests.memory }}
+            {{ end }}
+            {{ if .Values.impersonation.resources.requests.cpu }}
+            cpu: {{ quote .Values.impersonation.resources.requests.cpu }}
+            {{ end }}
+          {{ end }}
+          {{ if .Values.impersonation.resources.limits }}
+          limits:
+            {{ if .Values.impersonation.resources.limits.memory }}
+            memory: {{ quote .Values.impersonation.resources.limits.memory }}
+            {{ end }}
+            {{ if .Values.impersonation.resources.limits.cpu }}
+            cpu: {{ quote .Values.impersonation.resources.limits.cpu }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      volumes:
+        {{ if .Values.impersonation.explicit_certificate_trust }}
+        - name: kube-oidc-proxy-config
+          secret:
+            secretName: {{ .Values.impersonation.ca_secret_name }}
+            items:
+            - key: tls.crt
+              path: oidc-ca.pem
+        {{ end }}
+        - name: kube-oidc-proxy-tls
+          secret:
+            secretName: unison-tls
+            items:
+            - key: tls.crt
+              path: crt.pem
+            - key: tls.key
+              path: key.pem
+      {{ $length := len .Values.services.node_selectors }}
+      {{ if eq $length 0  }}
+      nodeSelector: {}
+      {{ else }}
+      nodeSelector: {{ range $key,$value := .Values.services.node_selectors }}
+        {{ $key }}: {{ quote $value }}
+      {{ end }}
+      {{ end }}
+
+      {{ if .Values.services.pullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.services.pullSecret }}
+      {{ end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: kube-oidc-proxy-{{ .Release.Name }}
+  name: kube-oidc-proxy-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    app: kube-oidc-proxy-{{ .Release.Name }}
+{{ end }}

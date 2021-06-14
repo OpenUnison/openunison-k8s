@@ -1,0 +1,328 @@
+{{ if eq .Values.enable_impersonation true }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: impersonator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - users
+  - groups
+  verbs:
+  - impersonate
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: orchestra-impersonator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: impersonator
+subjects:
+- kind: ServiceAccount
+  name: openunison-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+{{ end }}
+{{ if .Values.openunison.enabled_provisioning }}
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openunison-{{ .Release.Name }}-cluster-administrators
+subjects:
+- kind: Group
+  name: k8s-cluster-administrators
+  apiGroup: rbac.authorization.k8s.io
+- kind: ServiceAccount
+  name: openunison-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+{{ end }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: list-namespaces
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - namespaces
+  verbs:
+  - list
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openunison-cluster-list-namespaces
+subjects:
+- kind: Group
+  name: users
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: list-namespaces
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: {{ .Values.dashboard.namespace }}
+  name: orchestra-dashboard
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  - pods
+  verbs:
+  - "*"
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: orchestra-dashboard
+  namespace: {{ .Values.dashboard.namespace }}
+subjects:
+- kind: ServiceAccount
+  name: openunison-operator
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: orchestra-dashboard
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: orchestra-certs
+rules:
+- apiGroups:
+  - certificates.k8s.io
+  resources:
+  - certificatesigningrequests
+  - certificatesigningrequests/approval
+  verbs:
+  - "*"
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: orchestra-certs
+subjects:
+- kind: ServiceAccount
+  name: openunison-operator
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: orchestra-certs
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: "openunison-workflow-validation"
+webhooks:
+- name: "workflows-openunison.tremolo.io"
+  rules:
+  - apiGroups:   ["openunison.tremolo.io"]
+    apiVersions: ["v1"]
+    operations:  ["CREATE","UPDATE"]
+    resources:   ["workflows"]
+    scope:       "Namespaced"
+  clientConfig:
+    service:
+      namespace: {{ .Release.Namespace }}
+      name: "openunison-{{ .Release.Name }}"
+      path: /k8s/webhooks/v1/workflows
+    caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVGekNDQXYrZ0F3SUJBZ0lHQVhWWU5KTXhNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1JR1hNUkl3RUFZRFZRUUcNCkV3bE5lVU52ZFc1MGNua3hHVEFYQmdOVkJBZ1RFRk4wWVhSbElHOW1JRU5zZFhOMFpYSXhFekFSQmdOVkJBY1QNCkNrMTVJRU5zZFhOMFpYSXhEakFNQmdOVkJBb1RCVTE1VDNKbk1STXdFUVlEVlFRTEV3cExkV0psY201bGRHVnoNCk1Td3dLZ1lEVlFRREV5TnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXBjMjl1TG5OMll6QWUNCkZ3MHlNREV3TWpRd01USTBNREZhRncweU1URXdNalF3TVRJME1ERmFNSUdYTVJJd0VBWURWUVFHRXdsTmVVTnYNCmRXNTBjbmt4R1RBWEJnTlZCQWdURUZOMFlYUmxJRzltSUVOc2RYTjBaWEl4RXpBUkJnTlZCQWNUQ2sxNUlFTnMNCmRYTjBaWEl4RGpBTUJnTlZCQW9UQlUxNVQzSm5NUk13RVFZRFZRUUxFd3BMZFdKbGNtNWxkR1Z6TVN3d0tnWUQNClZRUURFeU52Y0dWdWRXNXBjMjl1TFc5eVkyaGxjM1J5WVM1dmNHVnVkVzVwYzI5dUxuTjJZekNDQVNJd0RRWUoNCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUt0WW5Pd05wejhyNXNBQWVDRVcwaUM1WmcyNGoxMDINCjlvcFRMSFE2S3RzK0xVZlI4ekV4VFJncG54V1hIbjRTbitKcHl5d01tdktRU3hmT3lCak1nNmlvcDlNZXQ2b1QNCkhWNTlLb0lzM2t6bitFeHFvd0JoeVRyOGFmL3NZb1pXdTlrcXkxWmErcEgzQXpiSWdIM2JjNllGQkQrak8yWDENCmNtSXdCOXFFbytRU2IvOURQVE1tU0tvbGZCdndha1ZVME1lYUwwbGlYUVNlZG5yNHZvZ20xRWR3Y1hRWkxheXANCkVadUVmTDBySVY1bTJiMzhncWYrcnNTSU9QT0RNVWN2VFpmSnQxczZWK2xTTXA2ZVp6TG9GMlF5MVViOHhBQUkNCldYb3hWOXVMdXFFb1FxZEpKTWI3b0ZGVUUvTmpodkVoV0E0c3ljQ3A5Yk1qVi9YMUp2QXlzQTBDQXdFQUFhTm4NCk1HVXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU9CZ05WSFE4QkFmOEVCQU1DQWdRd0VnWURWUjBsQVFIL0JBZ3cNCkJnWUVWUjBsQURBdUJnTlZIUkVFSnpBbGdpTnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXANCmMyOXVMbk4yWXpBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQWJ6dzlqV09tci9LMmdJdGdpVkd3UGFYRmNJZHMNCjNiamdvVkxYREJkVTFKK3lidm5EVnJEa2owNTlPRzVBOXhRTzEzWVEvbGIreVJNckEwZTdCWEVSR3oxZVlwZmsNCkZoczhCb3QrcENSRVlNMTU3cEtvOUpiN09FTVA4S0FET2xxMFpHYitqN2Zac0NSWlhSbzk5QUpmMms4R0s2WVoNCnFGZE43c1BXUnZXcDRBK2RRbVdPa1RKUVFhdVp5N1lvU1JROUFnSkxvdUxqbzd4QjdLM1hwTXBkNFl0UzBYd1kNClJxV0dreGh6eGtDaWJTZFhrSUFGSkZxc0pZVHFTdHQ4ZXdZaUQyL1Zob3ozcjJjZC8vcXZIWXljL1U5Zm9zM3UNCmR5R1NPWGhnS2pJSTRQblovOS9kemJDWFc0dlFFUVJEaENTTHpmSk5KS3NmMkt2aUNmM3BHa2tHNmc9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  timeoutSeconds: 5
+- name: "customazs-openunison.tremolo.io"
+  rules:
+  - apiGroups:   ["openunison.tremolo.io"]
+    apiVersions: ["v1"]
+    operations:  ["CREATE","UPDATE"]
+    resources:   ["customazs"]
+    scope:       "Namespaced"
+  clientConfig:
+    service:
+      namespace: {{ .Release.Namespace }}
+      name: "openunison-{{ .Release.Name }}"
+      path: /k8s/webhooks/v1/customazs
+    caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVGekNDQXYrZ0F3SUJBZ0lHQVhWWU5KTXhNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1JR1hNUkl3RUFZRFZRUUcNCkV3bE5lVU52ZFc1MGNua3hHVEFYQmdOVkJBZ1RFRk4wWVhSbElHOW1JRU5zZFhOMFpYSXhFekFSQmdOVkJBY1QNCkNrMTVJRU5zZFhOMFpYSXhEakFNQmdOVkJBb1RCVTE1VDNKbk1STXdFUVlEVlFRTEV3cExkV0psY201bGRHVnoNCk1Td3dLZ1lEVlFRREV5TnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXBjMjl1TG5OMll6QWUNCkZ3MHlNREV3TWpRd01USTBNREZhRncweU1URXdNalF3TVRJME1ERmFNSUdYTVJJd0VBWURWUVFHRXdsTmVVTnYNCmRXNTBjbmt4R1RBWEJnTlZCQWdURUZOMFlYUmxJRzltSUVOc2RYTjBaWEl4RXpBUkJnTlZCQWNUQ2sxNUlFTnMNCmRYTjBaWEl4RGpBTUJnTlZCQW9UQlUxNVQzSm5NUk13RVFZRFZRUUxFd3BMZFdKbGNtNWxkR1Z6TVN3d0tnWUQNClZRUURFeU52Y0dWdWRXNXBjMjl1TFc5eVkyaGxjM1J5WVM1dmNHVnVkVzVwYzI5dUxuTjJZekNDQVNJd0RRWUoNCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUt0WW5Pd05wejhyNXNBQWVDRVcwaUM1WmcyNGoxMDINCjlvcFRMSFE2S3RzK0xVZlI4ekV4VFJncG54V1hIbjRTbitKcHl5d01tdktRU3hmT3lCak1nNmlvcDlNZXQ2b1QNCkhWNTlLb0lzM2t6bitFeHFvd0JoeVRyOGFmL3NZb1pXdTlrcXkxWmErcEgzQXpiSWdIM2JjNllGQkQrak8yWDENCmNtSXdCOXFFbytRU2IvOURQVE1tU0tvbGZCdndha1ZVME1lYUwwbGlYUVNlZG5yNHZvZ20xRWR3Y1hRWkxheXANCkVadUVmTDBySVY1bTJiMzhncWYrcnNTSU9QT0RNVWN2VFpmSnQxczZWK2xTTXA2ZVp6TG9GMlF5MVViOHhBQUkNCldYb3hWOXVMdXFFb1FxZEpKTWI3b0ZGVUUvTmpodkVoV0E0c3ljQ3A5Yk1qVi9YMUp2QXlzQTBDQXdFQUFhTm4NCk1HVXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU9CZ05WSFE4QkFmOEVCQU1DQWdRd0VnWURWUjBsQVFIL0JBZ3cNCkJnWUVWUjBsQURBdUJnTlZIUkVFSnpBbGdpTnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXANCmMyOXVMbk4yWXpBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQWJ6dzlqV09tci9LMmdJdGdpVkd3UGFYRmNJZHMNCjNiamdvVkxYREJkVTFKK3lidm5EVnJEa2owNTlPRzVBOXhRTzEzWVEvbGIreVJNckEwZTdCWEVSR3oxZVlwZmsNCkZoczhCb3QrcENSRVlNMTU3cEtvOUpiN09FTVA4S0FET2xxMFpHYitqN2Zac0NSWlhSbzk5QUpmMms4R0s2WVoNCnFGZE43c1BXUnZXcDRBK2RRbVdPa1RKUVFhdVp5N1lvU1JROUFnSkxvdUxqbzd4QjdLM1hwTXBkNFl0UzBYd1kNClJxV0dreGh6eGtDaWJTZFhrSUFGSkZxc0pZVHFTdHQ4ZXdZaUQyL1Zob3ozcjJjZC8vcXZIWXljL1U5Zm9zM3UNCmR5R1NPWGhnS2pJSTRQblovOS9kemJDWFc0dlFFUVJEaENTTHpmSk5KS3NmMkt2aUNmM3BHa2tHNmc9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  timeoutSeconds: 5
+- name: "authmechs-openunison.tremolo.io"
+  rules:
+  - apiGroups:   ["openunison.tremolo.io"]
+    apiVersions: ["v1"]
+    operations:  ["CREATE","UPDATE"]
+    resources:   ["authmechs"]
+    scope:       "Namespaced"
+  clientConfig:
+    service:
+      namespace: {{ .Release.Namespace }}
+      name: "openunison-{{ .Release.Name }}"
+      path: /k8s/webhooks/v1/authmechs
+    caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVGekNDQXYrZ0F3SUJBZ0lHQVhWWU5KTXhNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1JR1hNUkl3RUFZRFZRUUcNCkV3bE5lVU52ZFc1MGNua3hHVEFYQmdOVkJBZ1RFRk4wWVhSbElHOW1JRU5zZFhOMFpYSXhFekFSQmdOVkJBY1QNCkNrMTVJRU5zZFhOMFpYSXhEakFNQmdOVkJBb1RCVTE1VDNKbk1STXdFUVlEVlFRTEV3cExkV0psY201bGRHVnoNCk1Td3dLZ1lEVlFRREV5TnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXBjMjl1TG5OMll6QWUNCkZ3MHlNREV3TWpRd01USTBNREZhRncweU1URXdNalF3TVRJME1ERmFNSUdYTVJJd0VBWURWUVFHRXdsTmVVTnYNCmRXNTBjbmt4R1RBWEJnTlZCQWdURUZOMFlYUmxJRzltSUVOc2RYTjBaWEl4RXpBUkJnTlZCQWNUQ2sxNUlFTnMNCmRYTjBaWEl4RGpBTUJnTlZCQW9UQlUxNVQzSm5NUk13RVFZRFZRUUxFd3BMZFdKbGNtNWxkR1Z6TVN3d0tnWUQNClZRUURFeU52Y0dWdWRXNXBjMjl1TFc5eVkyaGxjM1J5WVM1dmNHVnVkVzVwYzI5dUxuTjJZekNDQVNJd0RRWUoNCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUt0WW5Pd05wejhyNXNBQWVDRVcwaUM1WmcyNGoxMDINCjlvcFRMSFE2S3RzK0xVZlI4ekV4VFJncG54V1hIbjRTbitKcHl5d01tdktRU3hmT3lCak1nNmlvcDlNZXQ2b1QNCkhWNTlLb0lzM2t6bitFeHFvd0JoeVRyOGFmL3NZb1pXdTlrcXkxWmErcEgzQXpiSWdIM2JjNllGQkQrak8yWDENCmNtSXdCOXFFbytRU2IvOURQVE1tU0tvbGZCdndha1ZVME1lYUwwbGlYUVNlZG5yNHZvZ20xRWR3Y1hRWkxheXANCkVadUVmTDBySVY1bTJiMzhncWYrcnNTSU9QT0RNVWN2VFpmSnQxczZWK2xTTXA2ZVp6TG9GMlF5MVViOHhBQUkNCldYb3hWOXVMdXFFb1FxZEpKTWI3b0ZGVUUvTmpodkVoV0E0c3ljQ3A5Yk1qVi9YMUp2QXlzQTBDQXdFQUFhTm4NCk1HVXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU9CZ05WSFE4QkFmOEVCQU1DQWdRd0VnWURWUjBsQVFIL0JBZ3cNCkJnWUVWUjBsQURBdUJnTlZIUkVFSnpBbGdpTnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXANCmMyOXVMbk4yWXpBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQWJ6dzlqV09tci9LMmdJdGdpVkd3UGFYRmNJZHMNCjNiamdvVkxYREJkVTFKK3lidm5EVnJEa2owNTlPRzVBOXhRTzEzWVEvbGIreVJNckEwZTdCWEVSR3oxZVlwZmsNCkZoczhCb3QrcENSRVlNMTU3cEtvOUpiN09FTVA4S0FET2xxMFpHYitqN2Zac0NSWlhSbzk5QUpmMms4R0s2WVoNCnFGZE43c1BXUnZXcDRBK2RRbVdPa1RKUVFhdVp5N1lvU1JROUFnSkxvdUxqbzd4QjdLM1hwTXBkNFl0UzBYd1kNClJxV0dreGh6eGtDaWJTZFhrSUFGSkZxc0pZVHFTdHQ4ZXdZaUQyL1Zob3ozcjJjZC8vcXZIWXljL1U5Zm9zM3UNCmR5R1NPWGhnS2pJSTRQblovOS9kemJDWFc0dlFFUVJEaENTTHpmSk5KS3NmMkt2aUNmM3BHa2tHNmc9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  timeoutSeconds: 5
+- name: "authchains-openunison.tremolo.io"
+  rules:
+  - apiGroups:   ["openunison.tremolo.io"]
+    apiVersions: ["v1"]
+    operations:  ["CREATE","UPDATE"]
+    resources:   ["authchains"]
+    scope:       "Namespaced"
+  clientConfig:
+    service:
+      namespace: {{ .Release.Namespace }}
+      name: "openunison-{{ .Release.Name }}"
+      path: /k8s/webhooks/v1/authchains
+    caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVGekNDQXYrZ0F3SUJBZ0lHQVhWWU5KTXhNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1JR1hNUkl3RUFZRFZRUUcNCkV3bE5lVU52ZFc1MGNua3hHVEFYQmdOVkJBZ1RFRk4wWVhSbElHOW1JRU5zZFhOMFpYSXhFekFSQmdOVkJBY1QNCkNrMTVJRU5zZFhOMFpYSXhEakFNQmdOVkJBb1RCVTE1VDNKbk1STXdFUVlEVlFRTEV3cExkV0psY201bGRHVnoNCk1Td3dLZ1lEVlFRREV5TnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXBjMjl1TG5OMll6QWUNCkZ3MHlNREV3TWpRd01USTBNREZhRncweU1URXdNalF3TVRJME1ERmFNSUdYTVJJd0VBWURWUVFHRXdsTmVVTnYNCmRXNTBjbmt4R1RBWEJnTlZCQWdURUZOMFlYUmxJRzltSUVOc2RYTjBaWEl4RXpBUkJnTlZCQWNUQ2sxNUlFTnMNCmRYTjBaWEl4RGpBTUJnTlZCQW9UQlUxNVQzSm5NUk13RVFZRFZRUUxFd3BMZFdKbGNtNWxkR1Z6TVN3d0tnWUQNClZRUURFeU52Y0dWdWRXNXBjMjl1TFc5eVkyaGxjM1J5WVM1dmNHVnVkVzVwYzI5dUxuTjJZekNDQVNJd0RRWUoNCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUt0WW5Pd05wejhyNXNBQWVDRVcwaUM1WmcyNGoxMDINCjlvcFRMSFE2S3RzK0xVZlI4ekV4VFJncG54V1hIbjRTbitKcHl5d01tdktRU3hmT3lCak1nNmlvcDlNZXQ2b1QNCkhWNTlLb0lzM2t6bitFeHFvd0JoeVRyOGFmL3NZb1pXdTlrcXkxWmErcEgzQXpiSWdIM2JjNllGQkQrak8yWDENCmNtSXdCOXFFbytRU2IvOURQVE1tU0tvbGZCdndha1ZVME1lYUwwbGlYUVNlZG5yNHZvZ20xRWR3Y1hRWkxheXANCkVadUVmTDBySVY1bTJiMzhncWYrcnNTSU9QT0RNVWN2VFpmSnQxczZWK2xTTXA2ZVp6TG9GMlF5MVViOHhBQUkNCldYb3hWOXVMdXFFb1FxZEpKTWI3b0ZGVUUvTmpodkVoV0E0c3ljQ3A5Yk1qVi9YMUp2QXlzQTBDQXdFQUFhTm4NCk1HVXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU9CZ05WSFE4QkFmOEVCQU1DQWdRd0VnWURWUjBsQVFIL0JBZ3cNCkJnWUVWUjBsQURBdUJnTlZIUkVFSnpBbGdpTnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXANCmMyOXVMbk4yWXpBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQWJ6dzlqV09tci9LMmdJdGdpVkd3UGFYRmNJZHMNCjNiamdvVkxYREJkVTFKK3lidm5EVnJEa2owNTlPRzVBOXhRTzEzWVEvbGIreVJNckEwZTdCWEVSR3oxZVlwZmsNCkZoczhCb3QrcENSRVlNMTU3cEtvOUpiN09FTVA4S0FET2xxMFpHYitqN2Zac0NSWlhSbzk5QUpmMms4R0s2WVoNCnFGZE43c1BXUnZXcDRBK2RRbVdPa1RKUVFhdVp5N1lvU1JROUFnSkxvdUxqbzd4QjdLM1hwTXBkNFl0UzBYd1kNClJxV0dreGh6eGtDaWJTZFhrSUFGSkZxc0pZVHFTdHQ4ZXdZaUQyL1Zob3ozcjJjZC8vcXZIWXljL1U5Zm9zM3UNCmR5R1NPWGhnS2pJSTRQblovOS9kemJDWFc0dlFFUVJEaENTTHpmSk5KS3NmMkt2aUNmM3BHa2tHNmc9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  timeoutSeconds: 5
+- name: "applications-openunison.tremolo.io"
+  rules:
+  - apiGroups:   ["openunison.tremolo.io"]
+    apiVersions: ["v1"]
+    operations:  ["CREATE","UPDATE"]
+    resources:   ["applications"]
+    scope:       "Namespaced"
+  clientConfig:
+    service:
+      namespace: {{ .Release.Namespace }}
+      name: "openunison-{{ .Release.Name }}"
+      path: /k8s/webhooks/v1/applications
+    caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVGekNDQXYrZ0F3SUJBZ0lHQVhWWU5KTXhNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1JR1hNUkl3RUFZRFZRUUcNCkV3bE5lVU52ZFc1MGNua3hHVEFYQmdOVkJBZ1RFRk4wWVhSbElHOW1JRU5zZFhOMFpYSXhFekFSQmdOVkJBY1QNCkNrMTVJRU5zZFhOMFpYSXhEakFNQmdOVkJBb1RCVTE1VDNKbk1STXdFUVlEVlFRTEV3cExkV0psY201bGRHVnoNCk1Td3dLZ1lEVlFRREV5TnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXBjMjl1TG5OMll6QWUNCkZ3MHlNREV3TWpRd01USTBNREZhRncweU1URXdNalF3TVRJME1ERmFNSUdYTVJJd0VBWURWUVFHRXdsTmVVTnYNCmRXNTBjbmt4R1RBWEJnTlZCQWdURUZOMFlYUmxJRzltSUVOc2RYTjBaWEl4RXpBUkJnTlZCQWNUQ2sxNUlFTnMNCmRYTjBaWEl4RGpBTUJnTlZCQW9UQlUxNVQzSm5NUk13RVFZRFZRUUxFd3BMZFdKbGNtNWxkR1Z6TVN3d0tnWUQNClZRUURFeU52Y0dWdWRXNXBjMjl1TFc5eVkyaGxjM1J5WVM1dmNHVnVkVzVwYzI5dUxuTjJZekNDQVNJd0RRWUoNCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUt0WW5Pd05wejhyNXNBQWVDRVcwaUM1WmcyNGoxMDINCjlvcFRMSFE2S3RzK0xVZlI4ekV4VFJncG54V1hIbjRTbitKcHl5d01tdktRU3hmT3lCak1nNmlvcDlNZXQ2b1QNCkhWNTlLb0lzM2t6bitFeHFvd0JoeVRyOGFmL3NZb1pXdTlrcXkxWmErcEgzQXpiSWdIM2JjNllGQkQrak8yWDENCmNtSXdCOXFFbytRU2IvOURQVE1tU0tvbGZCdndha1ZVME1lYUwwbGlYUVNlZG5yNHZvZ20xRWR3Y1hRWkxheXANCkVadUVmTDBySVY1bTJiMzhncWYrcnNTSU9QT0RNVWN2VFpmSnQxczZWK2xTTXA2ZVp6TG9GMlF5MVViOHhBQUkNCldYb3hWOXVMdXFFb1FxZEpKTWI3b0ZGVUUvTmpodkVoV0E0c3ljQ3A5Yk1qVi9YMUp2QXlzQTBDQXdFQUFhTm4NCk1HVXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU9CZ05WSFE4QkFmOEVCQU1DQWdRd0VnWURWUjBsQVFIL0JBZ3cNCkJnWUVWUjBsQURBdUJnTlZIUkVFSnpBbGdpTnZjR1Z1ZFc1cGMyOXVMVzl5WTJobGMzUnlZUzV2Y0dWdWRXNXANCmMyOXVMbk4yWXpBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQWJ6dzlqV09tci9LMmdJdGdpVkd3UGFYRmNJZHMNCjNiamdvVkxYREJkVTFKK3lidm5EVnJEa2owNTlPRzVBOXhRTzEzWVEvbGIreVJNckEwZTdCWEVSR3oxZVlwZmsNCkZoczhCb3QrcENSRVlNMTU3cEtvOUpiN09FTVA4S0FET2xxMFpHYitqN2Zac0NSWlhSbzk5QUpmMms4R0s2WVoNCnFGZE43c1BXUnZXcDRBK2RRbVdPa1RKUVFhdVp5N1lvU1JROUFnSkxvdUxqbzd4QjdLM1hwTXBkNFl0UzBYd1kNClJxV0dreGh6eGtDaWJTZFhrSUFGSkZxc0pZVHFTdHQ4ZXdZaUQyL1Zob3ozcjJjZC8vcXZIWXljL1U5Zm9zM3UNCmR5R1NPWGhnS2pJSTRQblovOS9kemJDWFc0dlFFUVJEaENTTHpmSk5KS3NmMkt2aUNmM3BHa2tHNmc9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  timeoutSeconds: 5
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openunison-operator-update-validatingwebhooks
+rules:
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources: ["validatingwebhookconfigurations"]
+  resourceNames: ["openunison-workflow-validation"]
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - patch
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openunison-operator-webhooks
+subjects:
+- kind: ServiceAccount
+  name: openunison-operator
+  namespace: openunison
+roleRef:
+  kind: ClusterRole
+  name: openunison-operator-update-validatingwebhooks
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    audit2rbac.liggitt.net/version: v0.7.0
+  labels:
+    audit2rbac.liggitt.net/generated: "true"
+    audit2rbac.liggitt.net/user: system-serviceaccount-openunison-openunison-orchestra
+  name: audit2rbac:system:serviceaccount:openunison:openunison-orchestra
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    audit2rbac.liggitt.net/version: v0.7.0
+  labels:
+    audit2rbac.liggitt.net/generated: "true"
+    audit2rbac.liggitt.net/user: system-serviceaccount-openunison-openunison-orchestra
+  name: audit2rbac:system:serviceaccount:openunison:openunison-orchestra
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: audit2rbac:system:serviceaccount:openunison:openunison-orchestra
+subjects:
+- kind: ServiceAccount
+  name: openunison-{{ .Release.Name }}
+  namespace: openunison
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: openunison-secrets
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs:
+  - get
+  - list
+  - watch
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openunison-secrets
+  namespace: {{ .Release.Namespace }}
+subjects:
+- kind: ServiceAccount
+  name: openunison-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: openunison-secrets
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: openunison-trusts-get
+rules:
+- apiGroups: ["openunison.tremolo.io"]
+  resources: ["trusts","portalurls","orgs","authmechs","authchains","resultgroups","applications","customazs","targets","workflows","oujobs"]
+  verbs:
+  - get
+  - list
+  - watch
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openunison-trusts-get
+  namespace: {{ .Release.Namespace }}
+subjects:
+- kind: ServiceAccount
+  name: openunison-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: openunison-trusts-get
+  apiGroup: rbac.authorization.k8s.io
