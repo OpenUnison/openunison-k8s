@@ -1,0 +1,22 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: login-form
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.proxy.auth.FormLoginAuthMech
+  uri: "/auth/formlogin"
+  init: {}
+  secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: jit
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.provisioning.auth.JITAuthMech
+  uri: "/auth/jit"
+  init: {}
+  secretParams: []

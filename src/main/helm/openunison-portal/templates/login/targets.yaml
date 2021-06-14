@@ -1,0 +1,31 @@
+{{ if not .Values.enable_provisioning }}
+apiVersion: openunison.tremolo.io/v1
+kind: Target
+metadata:
+  name: jitdb
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.provisioning.providers.K8sCrdUserProvider
+  params:
+  - name: k8sTarget
+    value: k8s
+  - name: nameSpace
+    value: {{ .Release.Namespace }}
+  secretParams: []
+  targetAttributes:
+  - name: first_name
+    source: first_name
+    sourceType: user
+  - name: last_name
+    source: last_name
+    sourceType: user
+  - name: email
+    source: email
+    sourceType: user
+  - name: sub
+    source: sub
+    sourceType: user
+  - name: uid
+    source: uid
+    sourceType: user
+{{ end }}

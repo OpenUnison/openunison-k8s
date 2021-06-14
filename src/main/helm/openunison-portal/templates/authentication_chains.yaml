@@ -1,0 +1,20 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationChain
+metadata:
+  name: enterprise-idp
+  namespace: {{ .Release.Namespace }}
+spec:
+  level: 20
+  root: o=Data
+  authMechs:
+  - name: login-form
+    required: required
+    params:
+      FORMLOGIN_JSP: "/auth/forms/defaultForm.jsp"
+    secretParams: []
+  - name: jit
+    required: required
+    params: 
+      nameAttr: uid
+      workflowName: jitdb

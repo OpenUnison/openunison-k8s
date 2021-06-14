@@ -5,38 +5,7 @@
       <params name="k8starget" value="k8s" />
       <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
     </dynamicApplications>
-    <application name="CheckAlive" azTimeoutMillis="30000">
-      <urls>
-        <url regex="false" authChain="anon" overrideHost="true" overrideReferer="true">
-          <host>*</host>
-          <filterChain>
-            <filter class="com.tremolosecurity.prelude.filters.LoginTest">
-              <param name="logoutURI" value="/logout" />
-              <param name="jspURI" value="/auth/forms/loginTestSimple.jsp" />
-            </filter>
-          </filterChain>
-          <uri>/check_alive</uri>
-          <results>
-            <azSuccess></azSuccess>
-          </results>
-          <azRules>
-            <rule scope="dn" constraint="o=Tremolo" />
-          </azRules>
-        </url>
-
-      </urls>
-      <cookieConfig>
-        <sessionCookieName>checkalive</sessionCookieName>
-        <domain>*</domain>
-        <logoutURI>/check_alive</logoutURI>
-        <keyAlias>session-unison</keyAlias>
-        <secure>true</secure>
-        <httpOnly>true</httpOnly>
-        <timeout>1</timeout>
-        <scope>-1</scope>
-        <sameSite>None</sameSite>
-      </cookieConfig>
-    </application>
+    @[dir:applications]
 
   </applications>
   <myvdConfig>#[MYVD_CONFIG_PATH]</myvdConfig>

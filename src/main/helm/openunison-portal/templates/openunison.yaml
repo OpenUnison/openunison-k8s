@@ -158,6 +158,7 @@ spec:
       - name: {{ .name }}
         pem_data: {{ .pem_b64 }} {{ end }}
     {{ end }}
+  myvd_configmap: {{ .Values.myvd_configmap | quote }}
   non_secret_data: 
     - name: K8S_URL
       {{ if eq .Values.enable_impersonation true }}
@@ -179,8 +180,6 @@ spec:
       value: {{ .Values.active_directory.srv_dns | quote }}
     - name: SESSION_INACTIVITY_TIMEOUT_SECONDS
       value: {{ .Values.network.session_inactivity_timeout_seconds | quote }}
-    - name: MYVD_CONFIG_PATH
-      value: {{ .Values.myvd_config_path }}
     - name: K8S_DASHBOARD_NAMESPACE
       value: {{ .Values.dashboard.namespace }}
     - name: K8S_DASHBOARD_SERVICE

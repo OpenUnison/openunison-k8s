@@ -1,0 +1,75 @@
+{{ if .Values.active_directory }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myvd
+  namespace: {{.Release.Namespace}}
+data:
+  myvd.conf: |-
+    #Global AuthMechConfig
+    server.globalChain=accesslog
+
+    server.globalChain.accesslog.className=com.tremolosecurity.proxy.myvd.log.AccessLog
+
+    server.nameSpaces=rootdse,myvdroot,shadowUsers,activedirectory
+    server.rootdse.chain=dse
+    server.rootdse.nameSpace=
+    server.rootdse.weight=0
+    server.rootdse.dse.className=net.sourceforge.myvd.inserts.RootDSE
+    server.rootdse.dse.config.namingContexts=o=Tremolo
+    server.myvdroot.chain=root
+    server.myvdroot.nameSpace=o=Tremolo
+    server.myvdroot.weight=0
+    server.myvdroot.root.className=net.sourceforge.myvd.inserts.RootObject
+
+    server.shadowUsers.chain=mapping,api
+    server.shadowUsers.nameSpace=ou=shadow,o=Tremolo
+    server.shadowUsers.weight=0
+    server.shadowUsers.enabled=true
+    server.shadowUsers.debug.className=net.sourceforge.myvd.inserts.DumpTransaction
+    server.shadowUsers.debug.config.logLevel=info
+    server.shadowUsers.debug.config.label=k8s
+    server.shadowUsers.mapping.className=net.sourceforge.myvd.inserts.mapping.AttributeMapper
+    server.shadowUsers.mapping.config.mapping=mail=email,givenName=first_name,sn=last_name
+    server.shadowUsers.api.className=com.tremolosecurity.myvd.K8sCrdInsert
+    server.shadowUsers.api.config.alwaysMapUIDInFilter=true
+    server.shadowUsers.api.config.nameSpace=#[K8S_OPENUNISON_NS:openunison]
+    server.shadowUsers.api.config.k8sTargetName=k8s
+    server.shadowUsers.api.config.alwaysMapUIDInFilter=true
+
+    server.activedirectory.chain=objectguid2text,dnmapper,objmap,membertrans,ldap
+    server.activedirectory.nameSpace=ou=activedirectory,o=Data
+    server.activedirectory.weight=0
+    server.activedirectory.enabled=true
+    server.activedirectory.objectguid2text.className=com.tremolosecurity.proxy.myvd.inserts.util.UUIDtoText
+    server.activedirectory.objectguid2text.config.attributeName=objectGUID
+    server.activedirectory.dnmapper.className=net.sourceforge.myvd.inserts.mapping.DNAttributeMapper
+    server.activedirectory.dnmapper.config.dnAttribs=member,owner,member,distinguishedName,manager
+    server.activedirectory.dnmapper.config.localBase=ou=activedirectory,o=Data
+    server.activedirectory.dnmapper.config.urlAttribs=
+    server.activedirectory.objmap.className=net.sourceforge.myvd.inserts.mapping.AttributeValueMapper
+    server.activedirectory.objmap.config.mapping=objectClass.inetOrgPerson=user,objectClass.groupofnames=group
+    server.activedirectory.membertrans.className=net.sourceforge.myvd.inserts.mapping.AttributeMapper
+    server.activedirectory.membertrans.config.mapping=member=member,uid=samAccountName
+    server.activedirectory.dnmapper.config.remoteBase=#[AD_BASE_DN]
+    server.activedirectory.ldap.className=com.tremolosecurity.proxy.myvd.inserts.ad.ADLdapInsert
+    server.activedirectory.ldap.config.host=#[AD_HOST]
+    server.activedirectory.ldap.config.port=#[AD_PORT]
+    server.activedirectory.ldap.config.remoteBase=#[AD_BASE_DN]
+    server.activedirectory.ldap.config.proxyDN=#[AD_BIND_DN]
+    server.activedirectory.ldap.config.proxyPass=#[AD_BIND_PASSWORD]
+    server.activedirectory.ldap.config.useSrvDNS=#[SRV_DNS]
+    server.activedirectory.ldap.config.ignoreRefs=true
+    server.activedirectory.ldap.config.passBindOnly=true
+    server.activedirectory.ldap.config.maxIdle=90000
+    server.activedirectory.ldap.config.maxMillis=90000
+    server.activedirectory.ldap.config.maxStaleTimeMillis=90000
+    server.activedirectory.ldap.config.minimumConnections=10
+    server.activedirectory.ldap.config.maximumConnections=10
+    server.activedirectory.ldap.config.usePaging=false
+    server.activedirectory.ldap.config.pageSize=0
+    server.activedirectory.ldap.config.heartbeatIntervalMillis=60000
+    server.activedirectory.ldap.config.type=#[AD_CON_TYPE]
+    server.activedirectory.ldap.config.sslSocketFactory=com.tremolosecurity.proxy.ssl.TremoloSSLSocketFactory
+{{ end }}

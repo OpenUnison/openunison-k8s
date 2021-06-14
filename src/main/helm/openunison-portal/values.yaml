@@ -22,6 +22,7 @@ amq_image: "docker.io/tremolosecurity/activemq-docker:latest"
 myvd_config_path: "WEB-INF/myvd.conf"
 k8s_cluster_name: kubernetes
 enable_impersonation: true
+myvd_configmap: myvd
 
 dashboard:
   namespace: "kubernetes-dashboard"
