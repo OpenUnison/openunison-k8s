@@ -75,3 +75,14 @@ spec:
   uri: "/auth/oauth2jwt"
   init: {}
   secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: oauth2k8s
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.proxy.auth.OAuth2K8sServiceAccount
+  uri: "/auth/oauth2k8s"
+  init: {}
+  secretParams: []

@@ -68,3 +68,25 @@ spec:
       audience: kubernetes
     secretParams: []
 {{ end }}
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationChain
+metadata:
+  name: oauth2k8s
+  namespace: {{ .Release.Namespace }}
+spec:
+  level: 20
+  root: o=Tremolo
+  authMechs:
+  - name: oauth2k8s
+    required: required
+    params:
+      k8sTarget: k8s
+      linkToDirectory: "false"
+      noMatchOU: oauth2
+      uidAttr: username
+      lookupFilter: "(uid=${sub})"
+      defaultObjectClass: inetOrgPerson
+      realm: kubernetes
+      scope: auth
+    secretParams: []

@@ -1,0 +1,30 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: Application
+metadata:
+  name: metrics
+  namespace: {{ .Release.Namespace }}
+spec:
+  azTimeoutMillis: 3000
+  isApp: true
+  urls:
+  - hosts:
+    - "*"
+    filterChain: 
+    - className: com.tremolosecurity.prometheus.filter.MetricsFilter
+      params: {}
+    uri: "/metrics"
+    authChain: oauth2k8s
+    azRules:
+    - scope: dn
+      constraint: "username=#[PROMETHEUS_SERVICE_ACCOUNT:system:serviceaccount:monitoring:prometheus-operator-prometheus],ou=oauth2,o=Tremolo"
+  cookieConfig:
+    sessionCookieName: metricssession
+    domain: "*"
+    secure: true
+    httpOnly: true
+    logoutURI: "/metrics"
+    keyAlias: session-unison
+    timeout: {{ .Values.network.session_inactivity_timeout_seconds }}
+    scope: -1
+    cookiesEnabled: false
