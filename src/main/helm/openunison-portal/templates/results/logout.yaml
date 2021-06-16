@@ -1,0 +1,10 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: ResultGroup
+metadata:
+  name: logout
+  namespace: {{ .Release.Namespace }}
+spec:
+- resultType: redirect
+  source: static
+  value: "https://#[OU_HOST]/auth/forms/logout.jsp"

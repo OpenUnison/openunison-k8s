@@ -1,0 +1,32 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: Application
+metadata:
+  name: root-redirect
+  namespace: {{ .Release.Namespace }}
+spec:
+  azTimeoutMillis: 3000
+  isApp: true
+  urls:
+  - hosts:
+    - "#[OU_HOST]"
+    filterChain:  []
+    uri: "^/$"
+    authChain: anon
+    regex: true
+    azRules:
+    - scope: dn
+      constraint: "o=Tremolo"
+    results:
+      azSuccess: scale-redirect
+  cookieConfig:
+    sessionCookieName: anon
+    domain: "#[OU_HOST]"
+    secure: true
+    httpOnly: true
+    logoutURI: "/logout"
+    keyAlias: session-unison
+    timeout: {{ .Values.network.session_inactivity_timeout_seconds }}
+    scope: -1
+    cookiesEnabled: false
+    

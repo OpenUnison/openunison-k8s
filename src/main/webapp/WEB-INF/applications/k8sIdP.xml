@@ -39,7 +39,7 @@
                           <param name="publicEndpoint" value="true" />
                           <param name="redirectURI" value="#[K8S_URL]/redirect_uri"/>
                           <param name="codeLastMileKeyName" value="lastmile-oidc"/>
-                          <param name="authChainName" value="LoginService"/>
+                          <param name="authChainName" value="login-service"/>
                           <param name="codeTokenSkewMilis" value="#[K8S_TOKEN_LIFE_MILLIS:60000]"/>
                           <param name="accessTokenTimeToLive" value="#[K8S_TOKEN_LIFE_MILLIS:60000]"/>
                           <param name="accessTokenSkewMillis" value="120000" />
@@ -50,7 +50,7 @@
                           <param name="publicEndpoint" value="false" />
                           <param name="redirectURI" value="https://#[K8S_DASHBOARD_HOST]/auth/oidc"/>
                           <param name="codeLastMileKeyName" value="lastmile-oidc"/>
-                          <param name="authChainName" value="LoginService"/>
+                          <param name="authChainName" value="login-service"/>
                           <param name="codeTokenSkewMilis" value="#[K8S_TOKEN_LIFE_MILLIS:60000]"/>
                           <param name="accessTokenTimeToLive" value="#[K8S_TOKEN_LIFE_MILLIS:60000]"/>
                           <param name="accessTokenSkewMillis" value="120000" />

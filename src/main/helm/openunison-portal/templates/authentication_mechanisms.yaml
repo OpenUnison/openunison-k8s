@@ -42,3 +42,25 @@ spec:
   uri: "/auth/loginservice"
   init: {}
   secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: oidc
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.unison.proxy.auth.openidconnect.OpenIDConnectAuthMech
+  uri: "/auth/oidc"
+  init: {}
+  secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: saml2
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.proxy.auth.SAML2Auth
+  uri: "/auth/saml2"
+  init: {}
+  secretParams: []

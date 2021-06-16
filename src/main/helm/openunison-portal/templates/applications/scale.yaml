@@ -19,6 +19,8 @@ spec:
     uri: "/scale"
     proxyTo: http://ouhtml-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:8080${fullURI}
     authChain: login-service
+    overrideHost: true
+    overrideReferer: true
     azRules:
     - scope: dn
       constraint: "o=Tremolo"

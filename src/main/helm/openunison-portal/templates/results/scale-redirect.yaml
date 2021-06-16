@@ -1,0 +1,10 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: ResultGroup
+metadata:
+  name: scale-redirect
+  namespace: {{ .Release.Namespace }}
+spec:
+- resultType: redirect
+  source: static
+  value: "/scale/"

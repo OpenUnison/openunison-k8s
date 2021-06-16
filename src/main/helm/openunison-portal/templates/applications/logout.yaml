@@ -1,0 +1,33 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: Application
+metadata:
+  name: logout
+  namespace: {{ .Release.Namespace }}
+spec:
+  azTimeoutMillis: 3000
+  isApp: true
+  urls:
+  - hosts:
+    - "#[OU_HOST]"
+    filterChain: 
+    - className: com.tremolosecurity.proxy.filters.SetNoCacheHeaders
+      params: {}
+    uri: "/logout"
+    authChain: anon
+    azRules:
+    - scope: dn
+      constraint: "o=Tremolo"
+    results:
+      azSuccess: logout-dashboard
+  cookieConfig:
+    sessionCookieName: tremolosession
+    domain: "#[OU_HOST]"
+    secure: true
+    httpOnly: true
+    logoutURI: "/logout"
+    keyAlias: session-unison
+    timeout: {{ .Values.network.session_inactivity_timeout_seconds }}
+    scope: -1
+    cookiesEnabled: true
+    

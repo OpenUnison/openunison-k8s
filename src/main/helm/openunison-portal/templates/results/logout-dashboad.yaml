@@ -1,0 +1,10 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: ResultGroup
+metadata:
+  name: logout-dashboard
+  namespace: {{ .Release.Namespace }}
+spec:
+- resultType: redirect
+  source: static
+  value: "https://#[K8S_DASHBOARD_HOST]/logout"
