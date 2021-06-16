@@ -1,0 +1,29 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: Application
+metadata:
+  name: anonfiles
+  namespace: {{ .Release.Namespace }}
+spec:
+  azTimeoutMillis: 3000
+  isApp: true
+  urls:
+  - hosts:
+    - "*"
+    filterChain: []
+    uri: "/favicon.ico"
+    authChain: anon
+    azRules:
+    - scope: dn
+      constraint: "o=Tremolo"
+  cookieConfig:
+    sessionCookieName: anon
+    domain: "*"
+    secure: true
+    httpOnly: true
+    logoutURI: "/logout"
+    keyAlias: session-unison
+    timeout: 1
+    scope: -1
+    cookiesEnabled: false
+    keyAlias: session-unison

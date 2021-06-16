@@ -128,19 +128,19 @@ limitations under the License.
 					<li ng-class="{active:scale.isSelectedTab('home')}" >
 						<a href ng-click="scale.setSelectedTab('home')" style="color:#484848">Home</a>
 					</li>
-					<li ng-class="{active:scale.isSelectedTab('requestAccess')}">
+					<li ng-show="scale.config.enableApprovals" $ng-class="{active:scale.isSelectedTab('requestAccess')}">
 						<a href ng-click="scale.setSelectedTab('requestAccess')" style="color:#484848">Request Access</a>
 					</li>
-					<li ng-class="{active:scale.isSelectedTab('checkOut')}">
+					<li ng-show="scale.config.enableApprovals" ng-class="{active:scale.isSelectedTab('checkOut')}">
 						<a href ng-click="scale.setSelectedTab('checkOut')" style="color:#484848">Check Out
 							<span class="badge alert-danger" ng-hide="scale.isCartEmpty()">{{ scale.numItemsInCart() }}</span>
 	          </a>
 	        </li>
-					<li ng-class="{active:scale.isSelectedTab('approvals')}" ng-show="scale.approvals.length" >
+					<li ng-show="scale.config.enableApprovals" ng-class="{active:scale.isSelectedTab('approvals')}" ng-show="scale.approvals.length" >
 	        	<a href ng-click="scale.setSelectedTab('approvals')" style="color:#484848">Open Approvals
 	            <span class="badge alert-danger">{{ scale.approvals.length }}</span></a>
 	        </li>
-					<li ng-class="{active:scale.isSelectedTab('reports')}" ng-show="scale.reports.length">
+					<li ng-show="scale.config.enableApprovals" ng-class="{active:scale.isSelectedTab('reports')}" ng-show="scale.reports.length">
 	        	<a href ng-click="scale.setSelectedTab('reports')" style="color:#484848">Reports</a>
 	        </li>
 					<li ng-class="{active:scale.isSelectedTab('logout')}">

@@ -20,3 +20,25 @@ spec:
   uri: "/auth/jit"
   init: {}
   secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: genoidctoken
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.proxy.auth.GenerateOIDCTokens
+  uri: "/auth/oidctoken"
+  init: {}
+  secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: login-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.proxy.auth.LoginService
+  uri: "/auth/loginservice"
+  init: {}
+  secretParams: []

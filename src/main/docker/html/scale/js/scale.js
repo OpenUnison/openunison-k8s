@@ -972,45 +972,45 @@ limitations under the License.
                     $scope.scale.selectReportOrg($scope.scale.reportOrgsSelectedNode);
 
                     
+                    $scope.scale.portalOrgs = [JSON.parse(JSON.stringify(response.data))];
+                    $scope.scale.portalOrgsSelectedNode = $scope.scale.portalOrgs[0];
+                    $scope.scale.portalOrgsExpandedNodes = [$scope.scale.portalOrgs[0]];
+                    $scope.scale.selectPortalOrgs($scope.scale.portalOrgsSelectedNode);
 
-                    $http.get('main/approvals').
-                      then(function(response) {
-                          $scope.scale.approvals = response.data.approvals;
+                    var urlsUrl = 'main/urls';
+                    if ($scope.scale.config.showPortalOrgs) {
+                      urlsUrl = urlsUrl + '/org/' + $scope.scale.portalOrgsSelectedNode.uuid; 
+                    }
 
+                    $http.get(urlsUrl).then(
+                      function(response) {
+                        $scope.scale.portalURLs = response.data;
 
-                          
-
-                            $scope.scale.portalOrgs = [JSON.parse(JSON.stringify(response.data))];
-                            $scope.scale.portalOrgsSelectedNode = $scope.scale.portalOrgs[0];
-                            $scope.scale.portalOrgsExpandedNodes = [$scope.scale.portalOrgs[0]];
-                            $scope.scale.selectPortalOrgs($scope.scale.portalOrgsSelectedNode);
-
-                            var urlsUrl = 'main/urls';
-                            if ($scope.scale.config.showPortalOrgs) {
-                              urlsUrl = urlsUrl + '/org/' + $scope.scale.portalOrgsSelectedNode.uuid; 
+                        if ($scope.scale.config.enableApprovals) {
+                          $http.get('main/approvals').
+                            then(function(response) {
+                              $scope.scale.approvals = response.data.approvals;
+                              $scope.scale.setSessionLoadedComplete();
+                            },
+                            function(response) {
+                              $scope.scale.appIsError = true;
+                              //$scope.$apply();
                             }
-
-                            $http.get(urlsUrl).then(
-                              function(response) {
-                                $scope.scale.portalURLs = response.data;
-
-                                $scope.scale.setSessionLoadedComplete();
-                                //$scope.$apply();
-
-                              },
-                              function(response) {
-                                $scope.scale.setSessionLoadedComplete();
-                                //$scope.$apply();
-                              }
-                            );
-                          
+                          );
+                        } else {
+                          $scope.scale.setSessionLoadedComplete();
+                        }
+                        
+                        //$scope.$apply();
 
                       },
                       function(response) {
-                        $scope.scale.appIsError = true;
+                        $scope.scale.setSessionLoadedComplete();
                         //$scope.$apply();
                       }
                     );
+
+                    
 
 
                   },

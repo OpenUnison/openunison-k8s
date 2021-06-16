@@ -1,0 +1,63 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: Application
+metadata:
+  name: scale
+  namespace: {{ .Release.Namespace }}
+spec:
+  azTimeoutMillis: 3000
+  isApp: true
+  urls:
+  - hosts:
+    - "#[OU_HOST]"
+    filterChain: 
+    - className: com.tremolosecurity.proxy.filters.XForward
+      params:
+        createHeaders: "false"
+    - className: com.tremolosecurity.proxy.filters.SetNoCacheHeaders
+      params: {}
+    uri: "/scale"
+    proxyTo: http://ouhtml-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:8080${fullURI}
+    authChain: login-service
+    azRules:
+    - scope: dn
+      constraint: "o=Tremolo"
+  - hosts:
+    - "#[OU_HOST]"
+    filterChain:
+    - className: com.tremolosecurity.scalejs.ws.ScaleMain
+      params:
+        displayNameAttribute: "sub"
+        frontPage.title: "Kubernetes Access Portal"
+        frontPage.text: "Use this portal to create and access namespaces in Kubernetes"
+        canEditUser: "false"
+        workflowName: ""
+        warnMinutesLeft: "5"
+        attributeNames: "sub"
+        sub.displayName: "Login ID"
+        sub.readOnly: "true"
+        uidAttributeName: uid
+        roleAttribute: groups
+        approvalAttributeNames: uid
+        approvals.uid: Login ID
+        showPortalOrgs: "#[SHOW_PORTAL_ORGS:false]"
+        logoutURL: "/logout"
+        canDelegate: "NO"
+        canPreApprove: "NO"
+        enableApprovals: {{ .Values.openunison.enable_provisioning | quote }}
+    uri: /scale/main
+    azRules:
+    - scope: dn
+      constraint: o=Tremolo
+    authChain: login-service
+  cookieConfig:
+    sessionCookieName: tremolosession
+    domain: "#[OU_HOST]"
+    secure: true
+    httpOnly: true
+    logoutURI: "/logout"
+    keyAlias: session-unison
+    timeout: {{ .Values.network.session_inactivity_timeout_seconds }}
+    scope: -1
+    cookiesEnabled: true
+    
