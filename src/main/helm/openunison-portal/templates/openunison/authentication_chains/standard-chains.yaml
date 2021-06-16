@@ -41,3 +41,30 @@ spec:
       cookieName: "tremoloLoginChoice"
       cookieDays: "30"
     secretParams: []
+{{ if .Values.enable_impersonation }}
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationChain
+metadata:
+  name: oauth2jwt
+  namespace: {{ .Release.Namespace }}
+spec:
+  level: 20
+  root: o=Tremolo
+  authMechs:
+  - name: oauth2jwt
+    required: required
+    params:
+      issuer: "https://#[OU_HOST]/auth/idp/k8sIdp"
+      validationKey: unison-saml2-rp-sig
+      linkToDirectory: "false"
+      noMatchOU: oauth2
+      uidAttr: sub
+      lookupFilter: "(sub=${sub})"
+      userLookupClassName: inetOrgPerson
+      defaultObjectClass: inetOrgPerson
+      realm: kubernetes
+      scope: auth
+      audience: kubernetes
+    secretParams: []
+{{ end }}

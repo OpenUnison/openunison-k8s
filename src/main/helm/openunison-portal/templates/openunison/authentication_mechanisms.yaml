@@ -64,3 +64,14 @@ spec:
   uri: "/auth/saml2"
   init: {}
   secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: oauth2jwt
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.proxy.auth.oauth2.OAuth2JWT
+  uri: "/auth/oauth2jwt"
+  init: {}
+  secretParams: []
