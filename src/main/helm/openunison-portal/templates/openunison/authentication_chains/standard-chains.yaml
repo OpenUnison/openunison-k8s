@@ -8,11 +8,23 @@ spec:
   level: 20
   root: o=Data
   authMechs:
+{{ if .Values.active_directory }}
   - name: login-form
     required: required
     params:
       FORMLOGIN_JSP: "/auth/forms/defaultForm.jsp"
     secretParams: []
+  - name: map
+    required: required
+    params:
+      map: 
+      - "uid|composite|${uid}"
+      - "mail|composite|${mail}"
+      - "givenName|composite|${givenName}"
+      - "sn|composite|${sn}"
+      - "displayName|composite|${displayName}"
+      - "memberOf|user|memberOf"
+{{ end }}
   - name: jit
     required: required
     params: 

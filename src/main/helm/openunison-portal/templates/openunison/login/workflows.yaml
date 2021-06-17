@@ -32,11 +32,11 @@ spec:
                sourceType: custom
                targetAttributeSource: com.tremolosecurity.mapping.DefaultEmail
              - targetAttributeName: first_name
-               sourceType: static
-               targetAttributeSource: na
+               sourceType: user
+               targetAttributeSource: givenName
              - targetAttributeName: last_name
-               sourceType: static
-               targetAttributeSource: na
+               sourceType: user
+               targetAttributeSource: sn
              - targetAttributeName: uid
                sourceType: user
                targetAttributeSource: uid

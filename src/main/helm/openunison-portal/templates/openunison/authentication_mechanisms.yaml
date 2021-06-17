@@ -86,3 +86,15 @@ spec:
   uri: "/auth/oauth2k8s"
   init: {}
   secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: map
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.proxy.auth.FullMappingAuthMech
+  uri: "/auth/map"
+  init: {}
+  secretParams: []
+
