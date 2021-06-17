@@ -90,3 +90,33 @@ spec:
       realm: kubernetes
       scope: auth
     secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationChain
+metadata:
+  name: oauth2jwt-login
+  namespace: {{ .Release.Namespace }}
+spec:
+  level: 20
+  root: o=Tremolo
+  authMechs:
+  - name: oauth2jwt
+    required: required
+    params:
+      issuer: "https://#[OU_HOST]/auth/idp/k8s-login-cli"
+      validationKey: unison-saml2-rp-sig
+      linkToDirectory: "true"
+      noMatchOU: oauth2
+      uidAttr: sub
+      lookupFilter: "(sub=${sub})"
+      userLookupClassName: inetOrgPerson
+      defaultObjectClass: inetOrgPerson
+      realm: kubernetes
+      scope: auth
+      audience: cli-local
+    secretParams: []
+  - name: genoidctoken
+    required: required
+    params:
+      idpName: k8sIdp
+      trustName: kubernetes
