@@ -232,7 +232,7 @@ spec:
     {{ end }}
     {{ range $key,$value := .Values.openunison.non_secret_data }}
     - name: {{ $key }}
-      value: {{ $value }}
+      value: {{ $value | quote }}
       {{ end }}
   openunison_network_configuration:
     activemq_dir: "/tmp/amq"
