@@ -17,6 +17,9 @@ spec:
     azRules:
     - scope: dn
       constraint: "o=Tremolo"
+    results:
+      azFail: default-login-failure
+      auFail: default-login-failure
     idp:
       className: com.tremolosecurity.idp.providers.Saml2Idp
       params:

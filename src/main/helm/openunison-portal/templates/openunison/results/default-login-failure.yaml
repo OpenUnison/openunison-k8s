@@ -1,0 +1,10 @@
+---
+apiVersion: openunison.tremolo.io/v1
+kind: ResultGroup
+metadata:
+  name: default-login-failure
+  namespace: {{ .Release.Namespace }}
+spec:
+- resultType: redirect
+  source: static
+  value: "/auth/forms/defaultFailedLogin.jsp"

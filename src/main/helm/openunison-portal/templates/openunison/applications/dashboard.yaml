@@ -29,10 +29,14 @@ spec:
     azRules:
     - scope: dn
       constraint: "o=Tremolo"
-    {{ if not .Values.enable_impersonation }}
+    
     results:
+    {{ if not .Values.enable_impersonation }}
       azSuccess: oauth2bearer
     {{ end  }}
+      azFail: default-login-failure
+      auFail: default-login-failure
+    
   - hosts:
     - "#[K8S_DASHBOARD_HOST]"
     filterChain:

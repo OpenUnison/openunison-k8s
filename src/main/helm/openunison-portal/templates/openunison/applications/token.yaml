@@ -26,6 +26,9 @@ spec:
     azRules:
     - scope: dn
       constraint: "o=Tremolo"
+    results:
+      azFail: default-login-failure
+      auFail: default-login-failure
   - hosts:
     - "#[OU_HOST]"
     filterChain:
@@ -55,6 +58,9 @@ spec:
     - scope: dn
       constraint: o=Tremolo
     authChain: login-service
+    results:
+      azFail: default-login-failure
+      auFail: default-login-failure
   cookieConfig:
     sessionCookieName: tremolosession
     domain: "#[OU_HOST]"

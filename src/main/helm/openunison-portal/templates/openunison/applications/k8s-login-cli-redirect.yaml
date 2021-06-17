@@ -21,6 +21,8 @@ spec:
       constraint: "o=Tremolo"
     results:
       azSuccess: redirect-to-local-login
+      azFail: default-login-failure
+      auFail: default-login-failure
   cookieConfig:
     sessionCookieName: tremolosession
     domain: "#[OU_HOST]"
