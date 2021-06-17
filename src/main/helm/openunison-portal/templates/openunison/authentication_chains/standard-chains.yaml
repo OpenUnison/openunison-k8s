@@ -25,6 +25,44 @@ spec:
       - "displayName|composite|${displayName}"
       - "memberOf|user|memberOf"
 {{ end }}
+{{ if .Values.oidc }}
+  - name: oidc
+    required: required
+    params:
+      bearerTokenName: oidcBearerToken
+      clientid: {{ .Values.oidc.client_id | quote }}
+      responseType: code
+      idpURL: {{ .Values.oidc.auth_url | quote }}
+      loadTokenURL: {{ .Values.oidc.token_url | quote }}
+      scope: {{ .Values.oidc.scopes | quote }}
+      linkToDirectory: "false"
+      noMatchOU: "oidc"
+      lookupFilter: "(uid=${sub})"
+      defaultObjectClass: inetOrgPerson
+      uidAttr: sub
+      hd: {{ .Values.oidc.domain | quote }}
+      {{ if .Values.oidc.user_in_idtoken }}
+      userLookupClassName: "com.tremolosecurity.unison.proxy.auth.openidconnect.loadUser.LoadJWTFromAccessToken"
+      jwtTokenAttributeName: "id_token"
+      {{ else }}
+      userLookupClassName: "com.tremolosecurity.unison.proxy.auth.openidconnect.loadUser.LoadAttributesFromWS"
+      restURL: {{ .Values.oidc.userinfo_url | quote }}
+      {{ end }}
+    secretParams:
+    - name: secretid
+      secretName: orchestra-secrets-source
+      secretKey: OIDC_CLIENT_SECRET
+  - name: map
+    required: required
+    params:
+      map: 
+      - "uid|composite|{{ print "${" .Values.oidc.claims.sub "}" }}"
+      - "mail|composite|{{ print "${" .Values.oidc.claims.email "}" }}"
+      - "givenName|composite|{{ print "${"  .Values.oidc.claims.given_name "}" }}"
+      - "sn|composite|{{ print "${"  .Values.oidc.claims.family_name "}" }}"
+      - "displayName|composite|{{ print "${"  .Values.oidc.claims.display_name "}" }}"
+      - "memberOf|user|{{ .Values.oidc.claims.groups }}"
+{{ end }}
   - name: jit
     required: required
     params: 

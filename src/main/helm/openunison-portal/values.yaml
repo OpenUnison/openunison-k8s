@@ -40,13 +40,13 @@ trusted_certs:
   - name: ldaps2
     pem_b64: SDFGSDFGDHSDRT#$%#$%SDSDTF
 
-active_directory:
-  base: cn=users,dc=ent2k12,dc=domain,dc=com
-  host: "192.168.2.75"
-  port: "636"
-  bind_dn: "cn=Administrator,cn=users,dc=ent2k12,dc=domain,dc=com"
-  con_type: ldaps
-  srv_dns: "false"
+#active_directory:
+#  base: cn=users,dc=ent2k12,dc=domain,dc=com
+#  host: "192.168.2.75"
+#  port: "636"
+#  bind_dn: "cn=Administrator,cn=users,dc=ent2k12,dc=domain,dc=com"
+#  con_type: ldaps
+#  srv_dns: "false"
 
 database:
   hibernate_dialect: org.hibernate.dialect.MySQL5InnoDBDialect

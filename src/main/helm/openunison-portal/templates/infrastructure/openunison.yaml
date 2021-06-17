@@ -166,6 +166,7 @@ spec:
       {{ else }}
       value: {{ .Values.network.k8s_url }}
       {{ end }}
+    {{ if .Values.active_directory }}
     - name: AD_BASE_DN
       value: {{ .Values.active_directory.base }}
     - name: AD_HOST
@@ -178,6 +179,7 @@ spec:
       value: {{ .Values.active_directory.con_type }}
     - name: SRV_DNS
       value: {{ .Values.active_directory.srv_dns | quote }}
+    {{ end }}
     - name: SESSION_INACTIVITY_TIMEOUT_SECONDS
       value: {{ .Values.network.session_inactivity_timeout_seconds | quote }}
     - name: K8S_DASHBOARD_NAMESPACE
