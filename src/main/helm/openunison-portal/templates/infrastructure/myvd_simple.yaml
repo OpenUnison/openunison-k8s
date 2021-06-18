@@ -1,4 +1,4 @@
-{{ if .Values.oidc }}
+{{ if or .Values.oidc .Values.github }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -34,7 +34,7 @@ data:
     server.shadowUsers.mapping.config.mapping=mail=email,givenName=first_name,sn=last_name
     server.shadowUsers.api.className=com.tremolosecurity.myvd.K8sCrdInsert
     server.shadowUsers.api.config.alwaysMapUIDInFilter=true
-    server.shadowUsers.api.config.nameSpace=#[K8S_OPENUNISON_NS:openunison]
+    server.shadowUsers.api.config.nameSpace={{ .Release.Namespace }}
     server.shadowUsers.api.config.k8sTargetName=k8s
     server.shadowUsers.api.config.alwaysMapUIDInFilter=true
 {{ end }}

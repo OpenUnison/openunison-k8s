@@ -15,10 +15,16 @@ spec:
     className: ""
     params: []
   tasks: |-
+           {{ if .Values.github }}
+           - taskType: customTask
+             className: com.tremolosecurity.unison.proxy.auth.github.MergeGithubGroups
+             params: {}
+           {{ else }}
            - taskType: customTask
              className: com.tremolosecurity.provisioning.customTasks.Attribute2Groups
              params:
                attributeName: memberOf
+           {{ end }}
            - taskType: mapping
              strict: true
              map:

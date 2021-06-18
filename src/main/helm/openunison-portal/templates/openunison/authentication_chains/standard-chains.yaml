@@ -63,6 +63,37 @@ spec:
       - "displayName|composite|{{ print "${"  .Values.oidc.claims.display_name "}" }}"
       - "memberOf|user|{{ .Values.oidc.claims.groups }}"
 {{ end }}
+{{ if .Values.github }}
+  - name: github
+    required: required
+    params:
+      bearerTokenName: githubToken
+      clientid: {{ .Values.github.client_id }}
+      scope: "user:read user:email read:org"
+      linkToDirectory: "false"
+      noMatchOU: github
+      lookupFilter: "(uid=${login})"
+      uidAttr: login
+      defaultObjectClass: inetOrgPerson
+    secretParams:
+    - name: secretid
+      secretName: orchestra-secrets-source
+      secretKey: GITHUB_SECRET_ID
+  - name: az
+    required: required
+    params:
+      rules: custom;github!{{ .Values.github.teams }}
+  - name: map
+    required: required
+    params:
+      map: 
+      - "uid|user|login"
+      - "mail|static|na"
+      - "givenName|static|na"
+      - "sn|static|na"
+      - "displayName|static|na"
+      - "memberOf|user|groups"
+{{ end }}
   - name: jit
     required: required
     params: 

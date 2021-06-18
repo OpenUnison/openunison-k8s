@@ -1,0 +1,11 @@
+{{ if .Values.github }}
+---
+apiVersion: openunison.tremolo.io/v1
+kind: CustomAuthorization
+metadata:
+  name: github
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.unison.proxy.auth.github.GithubTeamRule
+  params: {}
+{{ end }}

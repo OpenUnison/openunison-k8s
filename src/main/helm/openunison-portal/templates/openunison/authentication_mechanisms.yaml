@@ -97,4 +97,26 @@ spec:
   uri: "/auth/map"
   init: {}
   secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: github
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.unison.proxy.auth.github.GithubAuthMech
+  uri: "/auth/github"
+  init: {}
+  secretParams: []
+---
+apiVersion: openunison.tremolo.io/v1
+kind: AuthenticationMechanism
+metadata:
+  name: az
+  namespace: {{ .Release.Namespace }}
+spec:
+  className: com.tremolosecurity.proxy.auth.AuthorizationAuthMech
+  uri: "/auth/az"
+  init: {}
+  secretParams: []
 
