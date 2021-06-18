@@ -1,4 +1,4 @@
-{{ if or .Values.oidc .Values.github }}
+{{ if or .Values.oidc .Values.github .Values.saml }}
 ---
 apiVersion: v1
 kind: ConfigMap

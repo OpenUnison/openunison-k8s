@@ -317,6 +317,21 @@ spec:
         {{ end }}
       {{ end }}
     {{ end }}
+  {{ if .Values.saml }}
+  saml_remote_idp:
+    - mapping:
+        encryption_cert_alias: idp-saml2-enc
+        entity_id: IDP_ENTITY_ID
+        logout_url: IDP_LOGOUT
+        post_url: IDP_POST
+        redirect_url: IDP_REDIR
+        signing_cert_alias: idp-saml2-sig
+      source: {{ $length := len .Values.saml.idp_url }} {{ if gt $length 0 }}
+        url: {{ .Values.saml.idp_url }}
+{{ else }}
+        xml: {{ .Values.saml.metadata_xml_b64 }}
+{{ end }}
+{{ end }}
 {{ if .Values.openunison.enable_provisioning }}
   run_sql: |-
               # By: Ron Cordell - roncordell

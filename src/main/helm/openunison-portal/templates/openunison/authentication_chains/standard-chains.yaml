@@ -94,6 +94,43 @@ spec:
       - "displayName|static|na"
       - "memberOf|user|groups"
 {{ end }}
+{{ if .Values.saml }}
+  - name: saml2
+    required: required
+    params:
+      idpURL: "#[IDP_POST]"
+      idpRedirURL: "#[IDP_REDIR]"
+      idpSigKeyName: 
+      - idp-saml2-sig
+      - idp-saml2-sig-1
+      ldapAttribute: uid
+      dnOU: saml
+      defaultOC: inetOrgPerson
+      authCtxRef: ""
+      spSigKey: unison-saml2-rp-sig
+      sigAlg: "RSA-SHA256"
+      signAuthnReq: "true"
+      assertionsSigned: "#[SAML2_ASSERTION_SIGNED:true]"
+      responsesSigned: "#[SAML2_RESPONSE_SIGNED:false]"
+      assertionEncrypted: "false"
+      spEncKey: ""
+      forceToSSL: "false"
+      dontLinkToLDAP: "true"
+      logoutURL: "https://#[K8S_DASHBOARD_HOST]/logout"
+      entityID: "#[IDP_ENTITY_ID]"
+      idpRedirLogoutURL: "#[IDP_LOGOUT]"
+    secretParams: []
+  - name: map
+    required: required
+    params:
+      map: 
+      - "uid|composite|${uid}"
+      - "mail|composite|${mail}"
+      - "givenName|composite|${givenName}"
+      - "sn|composite|${sn}"
+      - "displayName|composite|${displayName}"
+      - "memberOf|user|memberOf"
+{{ end }}
   - name: jit
     required: required
     params: 
