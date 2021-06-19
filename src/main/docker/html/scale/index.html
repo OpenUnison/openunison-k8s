@@ -202,7 +202,7 @@ limitations under the License.
 
 					<div class="col-md-6">
 						<h3>Roles</h3>
-						<div ng-hide="scale.user.groups.length" class="alert alert-info" >{{ scale.displayName() }} has no roles assigned</div>
+						<div ng-hide="scale.currentGroups.length" class="alert alert-info" >{{ scale.displayName() }} has no roles assigned</div>
 
 						<ul class="list-group" ng-show="scale.currentGroups.length">
 								<li class="list-group-item" ng-repeat="groupName in scale.currentGroups">{{ groupName }}</li>
