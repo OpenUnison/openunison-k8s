@@ -52,14 +52,14 @@ data:
     server.activedirectory.objmap.config.mapping=objectClass.inetOrgPerson=user,objectClass.groupofnames=group
     server.activedirectory.membertrans.className=net.sourceforge.myvd.inserts.mapping.AttributeMapper
     server.activedirectory.membertrans.config.mapping=member=member,uid=samAccountName
-    server.activedirectory.dnmapper.config.remoteBase=#[AD_BASE_DN]
+    server.activedirectory.dnmapper.config.remoteBase={{ .Values.active_directory.base }}
     server.activedirectory.ldap.className=com.tremolosecurity.proxy.myvd.inserts.ad.ADLdapInsert
-    server.activedirectory.ldap.config.host=#[AD_HOST]
-    server.activedirectory.ldap.config.port=#[AD_PORT]
-    server.activedirectory.ldap.config.remoteBase=#[AD_BASE_DN]
-    server.activedirectory.ldap.config.proxyDN=#[AD_BIND_DN]
+    server.activedirectory.ldap.config.host={{ .Values.active_directory.host }}
+    server.activedirectory.ldap.config.port={{ .Values.active_directory.port }}
+    server.activedirectory.ldap.config.remoteBase={{ .Values.active_directory.base }}
+    server.activedirectory.ldap.config.proxyDN={{ .Values.active_directory.bind_dn }}
     server.activedirectory.ldap.config.proxyPass=#[AD_BIND_PASSWORD]
-    server.activedirectory.ldap.config.useSrvDNS=#[SRV_DNS]
+    server.activedirectory.ldap.config.useSrvDNS={{  .Values.active_directory.srv_dns }}
     server.activedirectory.ldap.config.ignoreRefs=true
     server.activedirectory.ldap.config.passBindOnly=true
     server.activedirectory.ldap.config.maxIdle=90000
@@ -70,6 +70,6 @@ data:
     server.activedirectory.ldap.config.usePaging=false
     server.activedirectory.ldap.config.pageSize=0
     server.activedirectory.ldap.config.heartbeatIntervalMillis=60000
-    server.activedirectory.ldap.config.type=#[AD_CON_TYPE]
+    server.activedirectory.ldap.config.type={{ .Values.active_directory.con_type }}
     server.activedirectory.ldap.config.sslSocketFactory=com.tremolosecurity.proxy.ssl.TremoloSSLSocketFactory
 {{ end }}

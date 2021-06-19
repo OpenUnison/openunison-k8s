@@ -166,20 +166,6 @@ spec:
       {{ else }}
       value: {{ .Values.network.k8s_url }}
       {{ end }}
-    {{ if .Values.active_directory }}
-    - name: AD_BASE_DN
-      value: {{ .Values.active_directory.base }}
-    - name: AD_HOST
-      value: {{ .Values.active_directory.host }}
-    - name: AD_PORT
-      value: {{ .Values.active_directory.port | quote }}
-    - name: AD_BIND_DN
-      value: {{ .Values.active_directory.bind_dn }}
-    - name: AD_CON_TYPE
-      value: {{ .Values.active_directory.con_type }}
-    - name: SRV_DNS
-      value: {{ .Values.active_directory.srv_dns | quote }}
-    {{ end }}
     - name: SESSION_INACTIVITY_TIMEOUT_SECONDS
       value: {{ .Values.network.session_inactivity_timeout_seconds | quote }}
     - name: K8S_DASHBOARD_NAMESPACE
@@ -191,7 +177,7 @@ spec:
 
 {{ if .Values.openunison.enable_provisioning }}
     - name: OPENUNISON_PROVISIONING_ENABLED
-      value: "false"
+      value: "true"
     - name: OU_HIBERNATE_DIALECT
       value: {{ .Values.database.hibernate_dialect }}
     - name: OU_QUARTZ_DIALECT
