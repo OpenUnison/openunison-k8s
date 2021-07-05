@@ -2,7 +2,7 @@
 apiVersion: openunison.tremolo.io/v5
 kind: OpenUnison
 metadata:
-  name: {{ .Release.name }}
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   dest_secret: {{ .Release.Name }}
