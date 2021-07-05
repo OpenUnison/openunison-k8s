@@ -3,7 +3,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: impersonator
+  name: impersonator-{{ .Release.Namespace }}-{{ .Release.Name }}
 rules:
 - apiGroups:
   - ""
@@ -16,11 +16,11 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: orchestra-impersonator
+  name: impersonator-{{ .Release.Namespace }}-{{ .Release.Name }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: impersonator
+  name: impersonator-{{ .Release.Namespace }}-{{ .Release.Name }}
 subjects:
 - kind: ServiceAccount
   name: openunison-{{ .Release.Name }}
@@ -74,7 +74,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: {{ .Values.dashboard.namespace }}
-  name: orchestra-dashboard
+  name: orchestra-dashboard-{{ .Release.Name }}
 rules:
 - apiGroups:
   - ''
@@ -87,7 +87,7 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: orchestra-dashboard
+  name: orchestra-dashboard-{{ .Release.Name }}
   namespace: {{ .Values.dashboard.namespace }}
 subjects:
 - kind: ServiceAccount
@@ -95,13 +95,13 @@ subjects:
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
-  name: orchestra-dashboard
+  name: orchestra-dashboard-{{ .Release.Name }}
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: orchestra-certs
+  name: orchestra-certs-{{ .Release.Name }}
 rules:
 - apiGroups:
   - certificates.k8s.io
@@ -114,24 +114,24 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: orchestra-certs
+  name: orchestra-certs-{{ .Release.Name }}
 subjects:
 - kind: ServiceAccount
   name: openunison-operator
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: orchestra-certs
+  name: orchestra-certs-{{ .Release.Name }}
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: openunison-operator-update-validatingwebhooks
+  name: openunison-operator-{{ .Release.Name }}-webhooks
 rules:
 - apiGroups: ["admissionregistration.k8s.io"]
   resources: ["validatingwebhookconfigurations"]
-  resourceNames: ["openunison-workflow-validation"]
+  resourceNames: ["openunison-workflow-validation-{{ .Release.Name }}"]
   verbs:
   - get
   - list
@@ -142,14 +142,14 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: openunison-operator-webhooks
+  name: openunison-operator-{{ .Release.Name }}-webhooks
 subjects:
 - kind: ServiceAccount
   name: openunison-operator
-  namespace: openunison
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: openunison-operator-update-validatingwebhooks
+  name: openunison-operator-{{ .Release.Name }}-webhooks
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -159,8 +159,8 @@ metadata:
     audit2rbac.liggitt.net/version: v0.7.0
   labels:
     audit2rbac.liggitt.net/generated: "true"
-    audit2rbac.liggitt.net/user: system-serviceaccount-openunison-openunison-orchestra
-  name: audit2rbac:system:serviceaccount:openunison:openunison-orchestra
+    audit2rbac.liggitt.net/user: system-serviceaccount-openunison-openunison-{{ .Release.Name }}
+  name: audit2rbac:system:serviceaccount:openunison:openunison-{{ .Release.Name }}
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -176,12 +176,12 @@ metadata:
     audit2rbac.liggitt.net/version: v0.7.0
   labels:
     audit2rbac.liggitt.net/generated: "true"
-    audit2rbac.liggitt.net/user: system-serviceaccount-openunison-openunison-orchestra
-  name: audit2rbac:system:serviceaccount:openunison:openunison-orchestra
+    audit2rbac.liggitt.net/user: system-serviceaccount-openunison-openunison-{{ .Release.Name }}
+  name: audit2rbac:system:serviceaccount:openunison:openunison-{{ .Release.Name }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: audit2rbac:system:serviceaccount:openunison:openunison-orchestra
+  name: audit2rbac:system:serviceaccount:openunison:openunison-{{ .Release.Name }}
 subjects:
 - kind: ServiceAccount
   name: openunison-{{ .Release.Name }}

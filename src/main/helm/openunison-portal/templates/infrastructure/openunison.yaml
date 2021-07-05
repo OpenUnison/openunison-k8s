@@ -2,10 +2,10 @@
 apiVersion: openunison.tremolo.io/v5
 kind: OpenUnison
 metadata:
-  name: orchestra
+  name: {{ .Release.name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  dest_secret: orchestra
+  dest_secret: {{ .Release.name }}
   enable_activemq: true
   activemq_image: {{ .Values.amq_image }}
   hosts:
@@ -55,7 +55,7 @@ spec:
         - create_data:
             ca_cert: true
             key_size: 2048
-            server_name: openunison-{{ .Release.Name }}.openunison.svc
+            server_name: openunison-{{ .Release.Name }}.{{ .Release.Namespace }}.svc
             sign_by_k8s_ca: {{ .Values.certs.use_k8s_cm }}
             subject_alternative_names: []
           import_into_ks: keypair
@@ -546,7 +546,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: api-server-config
-  namespace: openunison
+  namespace: {{ .Release.Namespace }}
 data:
   oidc-api-server-flags: |-
                            --oidc-issuer-url=https://{{ .Values.network.openunison_host }}/auth/idp/k8sIdp
