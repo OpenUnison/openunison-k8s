@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  dest_secret: {{ .Release.name }}
+  dest_secret: {{ .Release.Name }}
   enable_activemq: true
   activemq_image: {{ .Values.amq_image }}
   hosts:
