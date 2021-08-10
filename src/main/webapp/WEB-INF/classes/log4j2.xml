@@ -21,8 +21,8 @@
 <Logger name="org.apache.http.wire"  level="error">
   <AppenderRef ref="STDOUT" level="error"/>
 </Logger>
--->
-<!--
+
+
 <Logger name="com.tremolosecurity.openunison.OpenUnisonConfigManager"  level="debug">
     <AppenderRef ref="STDOUT" level="debug"/>
   </Logger>

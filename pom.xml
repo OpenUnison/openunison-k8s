@@ -14,7 +14,7 @@
           </repository>
     <repository>
       <id>Tremolo Security Releases</id>
-      <url>https://nexus.tremolo.io/repository/releases/</url>
+      <url>https://nexus.tremolo.io/repository/betas/</url>
     </repository>
   </repositories>
 
@@ -90,10 +90,13 @@
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
-        <version>2.8.0</version>
+        <version>3.2.1</version>
         <configuration>
           <from>
+            <!-- 
             <image>tremolosecurity/openunison-jib-builder:latest</image>
+            -->
+            <image>docker.io/tremolosecurity/openunison-jib-builder2:latest</image>
           </from>
           <container>
             <user>431</user>
