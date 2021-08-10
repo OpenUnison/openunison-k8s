@@ -1,0 +1,95 @@
+<application name="validationwebhooks" azTimeoutMillis="30000" >
+  <urls>
+    <url regex="false" authChain="anon" overrideHost="true" overrideReferer="true">
+      <host>#[OU_SVC_NAME]</host>
+      <filterChain>
+        <filter class="com.tremolosecurity.provisioning.workflows.ValidateWorkflowWebhook">
+
+        </filter>
+      </filterChain>
+      <uri>/k8s/webhooks/v1/workflows</uri>
+      <results>
+        <azSuccess>
+        </azSuccess>
+      </results>
+      <azRules>
+        <rule scope="dn" constraint="o=Tremolo" />
+      </azRules>
+    </url>
+    <url regex="false" authChain="anon" overrideHost="true" overrideReferer="true">
+      <host>#[OU_SVC_NAME]</host>
+      <filterChain>
+        <filter class="com.tremolosecurity.proxy.dynamicconfiguration.webhooks.ValidateCustomAzWebhook">
+
+        </filter>
+      </filterChain>
+      <uri>/k8s/webhooks/v1/customazs</uri>
+      <results>
+        <azSuccess>
+        </azSuccess>
+      </results>
+      <azRules>
+        <rule scope="dn" constraint="o=Tremolo" />
+      </azRules>
+    </url>
+    <url regex="false" authChain="anon" overrideHost="true" overrideReferer="true">
+      <host>#[OU_SVC_NAME]</host>
+      <filterChain>
+        <filter class="com.tremolosecurity.proxy.dynamicconfiguration.webhooks.ValidateAuthMechsWebhook">
+
+        </filter>
+      </filterChain>
+      <uri>/k8s/webhooks/v1/authmechs</uri>
+      <results>
+        <azSuccess>
+        </azSuccess>
+      </results>
+      <azRules>
+        <rule scope="dn" constraint="o=Tremolo" />
+      </azRules>
+    </url>
+    <url regex="false" authChain="anon" overrideHost="true" overrideReferer="true">
+      <host>#[OU_SVC_NAME]</host>
+      <filterChain>
+        <filter class="com.tremolosecurity.proxy.dynamicconfiguration.webhooks.ValidateAuthChainsWebhook">
+
+        </filter>
+      </filterChain>
+      <uri>/k8s/webhooks/v1/authchains</uri>
+      <results>
+        <azSuccess>
+        </azSuccess>
+      </results>
+      <azRules>
+        <rule scope="dn" constraint="o=Tremolo" />
+      </azRules>
+    </url>
+    <url regex="false" authChain="anon" overrideHost="true" overrideReferer="true">
+      <host>#[OU_SVC_NAME]</host>
+      <filterChain>
+        <filter class="com.tremolosecurity.proxy.dynamicconfiguration.webhooks.ValidateApplicationsWebhook">
+
+        </filter>
+      </filterChain>
+      <uri>/k8s/webhooks/v1/applications</uri>
+      <results>
+        <azSuccess>
+        </azSuccess>
+      </results>
+      <azRules>
+        <rule scope="dn" constraint="o=Tremolo" />
+      </azRules>
+    </url>
+
+  </urls>
+  <cookieConfig>
+    <sessionCookieName>anon</sessionCookieName>
+    <domain>#[OU_SVC_NAME]</domain>
+    <logoutURI>/k8s/webhooks/v1/workflows</logoutURI>
+    <keyAlias>session-unison</keyAlias>
+    <secure>true</secure>
+    <httpOnly>true</httpOnly>
+    <timeout>1</timeout>
+    <scope>-1</scope>
+  </cookieConfig>
+</application>

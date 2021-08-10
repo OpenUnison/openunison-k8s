@@ -1,0 +1,18 @@
+# Redirect from http to https
+com.tremolosecurity.openunison.forceToSSL=true
+
+# The port on which Tomcat is configured to listen for http requests
+com.tremolosecurity.openunison.openPort=8080
+
+# The port on which Tomcat is configured to listen for https requests
+com.tremolosecurity.openunison.securePort=8443
+
+# The external port on which OpenUnison should listen for incoming requests
+com.tremolosecurity.openunison.externalOpenPort=80
+
+# The secured/encrypted external port on which OpenUnison should listen for incoming requests
+com.tremolosecurity.openunison.externalSecurePort=443
+
+#Uncomment and set for production deployments
+com.tremolosecurity.openunison.activemqdir=/tmp/unison-activemq
+com.tremolosecurity.openunison.quartzdir=/tmp/quartz

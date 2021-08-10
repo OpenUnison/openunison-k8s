@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%d][%t] %-5p %c{1} - %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+
+    <Root level="info">
+      <AppenderRef ref="STDOUT"/>
+    </Root> 
+    <Logger name="org.reflections"  level="info">
+  <AppenderRef ref="STDOUT" level="error"/>
+</Logger>
+<!--
+<Logger name="org.apache.http"  level="debug">
+  <AppenderRef ref="STDOUT" level="debug"/>
+</Logger>
+
+<Logger name="org.apache.http.wire"  level="error">
+  <AppenderRef ref="STDOUT" level="error"/>
+</Logger>
+
+
+<Logger name="com.tremolosecurity.openunison.OpenUnisonConfigManager"  level="debug">
+    <AppenderRef ref="STDOUT" level="debug"/>
+  </Logger>
+-->
+
+  </Loggers>
+</Configuration>
