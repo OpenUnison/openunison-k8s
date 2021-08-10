@@ -1,9 +1,9 @@
-name: Java CI
+name: Build OpenUnison
 
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
 
 jobs:
   build:
