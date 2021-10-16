@@ -57,6 +57,7 @@ public class CopyGroupMembers implements CustomTask {
         String localCopyTo = task.renderTemplate(this.copyTo, request);
 
         String memberAttr = task.getConfigManager().getCfg().getGroupMemberAttribute();
+        
         String[] members = null;
 
         try {
