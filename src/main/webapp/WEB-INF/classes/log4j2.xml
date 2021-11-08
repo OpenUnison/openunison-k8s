@@ -10,10 +10,10 @@
     <Root level="info">
       <AppenderRef ref="STDOUT"/>
     </Root> 
-    <Logger name="org.reflections"  level="info">
+<!--    <Logger name="org.reflections"  level="info">
   <AppenderRef ref="STDOUT" level="error"/>
 </Logger>
-<!--
+
 <Logger name="org.apache.http"  level="debug">
   <AppenderRef ref="STDOUT" level="debug"/>
 </Logger>
@@ -27,6 +27,8 @@
     <AppenderRef ref="STDOUT" level="debug"/>
   </Logger>
 -->
+
+
 
   </Loggers>
 </Configuration>
