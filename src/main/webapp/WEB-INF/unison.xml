@@ -91,13 +91,13 @@
       <userIdAttribute>uid</userIdAttribute>
       <approverAttributes>
         <value>uid</value>
-        <value>givenname</value>
+        <value>givenName</value>
         <value>sn</value>
         <value>mail</value>
       </approverAttributes>
       <userAttributes>
         <value>uid</value>
-        <value>givenname</value>
+        <value>givenName</value>
         <value>sn</value>
         <value>mail</value>
       </userAttributes>

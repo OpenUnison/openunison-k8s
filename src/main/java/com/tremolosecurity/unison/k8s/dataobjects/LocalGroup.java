@@ -32,6 +32,7 @@ public class LocalGroup {
 	int groupId;
 	String name;
 	String description;
+	String extra1;
 	List<LocalUser> users;
 
 	public LocalGroup() {
@@ -78,6 +79,15 @@ public class LocalGroup {
 
 	public void setUsers(List<LocalUser> users) {
 		this.users = users;
+	}
+
+	@Column(name = "extra1", nullable = true,columnDefinition = "TEXT")
+	public String getExtra1() {
+		return extra1;
+	}
+
+	public void setExtra1(String extra1) {
+		this.extra1 = extra1;
 	}
 
 
