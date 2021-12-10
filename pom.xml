@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.openunison</groupId>
   <artifactId>openunison-k8s</artifactId>
@@ -7,11 +6,11 @@
   <version>1.0.24</version>
   <name>openunison-k8s</name>
   <url>http://openunison.io</url>
-    <repositories>
-        <repository>
-            <id>Tremolo Security Dependencies</id>
-            <url>https://nexus.tremolo.io/repository/dependencies/</url>
-          </repository>
+  <repositories>
+    <repository>
+      <id>Tremolo Security Dependencies</id>
+      <url>https://nexus.tremolo.io/repository/dependencies/</url>
+    </repository>
     <repository>
       <id>Tremolo Security Releases</id>
       <url>https://nexus.tremolo.io/repository/releases/</url>
@@ -23,14 +22,15 @@
     <mysql.version>8.0.27</mysql.version>
     <qpid.version>1.3.0</qpid.version>
     <sqlserver.version>9.4.0.jre11</sqlserver.version>
+    <log4j.version>2.15.0</log4j.version>
   </properties>
-  
+
   <dependencies>
     <dependency>
-        <groupId>com.tremolosecurity.unison</groupId>
-        <artifactId>unison-scalejs-operators</artifactId>
-        <version>${openunison.version}</version>
-      </dependency>
+      <groupId>com.tremolosecurity.unison</groupId>
+      <artifactId>unison-scalejs-operators</artifactId>
+      <version>${openunison.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>openunison-on-undertow</artifactId>
@@ -60,15 +60,35 @@
       <version>${openunison.version}</version>
     </dependency>
     <dependency>
-			<groupId>org.apache.qpid</groupId>
-			<artifactId>qpid-jms-client</artifactId>
-			<version>${qpid.version}</version>
-		</dependency>
+      <groupId>org.apache.qpid</groupId>
+      <artifactId>qpid-jms-client</artifactId>
+      <version>${qpid.version}</version>
+    </dependency>
     <dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>mssql-jdbc</artifactId>
-			<version>${sqlserver.version}</version>
-		</dependency>
+      <groupId>com.microsoft.sqlserver</groupId>
+      <artifactId>mssql-jdbc</artifactId>
+      <version>${sqlserver.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -83,7 +103,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.3.2</version>
         <configuration>
           <overlays>
             <overlay>
@@ -91,6 +111,7 @@
               <artifactId>open-unison-webapp</artifactId>
             </overlay>
           </overlays>
+          <packagingExcludes>WEB-INF/lib/log4j*2.14.1.jar</packagingExcludes>
         </configuration>
       </plugin>
       <plugin>
@@ -117,4 +138,4 @@
       </plugin>
     </plugins>
   </build>
-  </project>
+</project>
