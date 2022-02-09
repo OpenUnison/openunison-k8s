@@ -61,8 +61,8 @@ SPSSODescriptorBuilder spb = new SPSSODescriptorBuilder();
 SPSSODescriptorImpl sp = (SPSSODescriptorImpl) spb.buildObject();
 ed.getRoleDescriptors().add(sp);
 
-HashMap<String,ParamType> params = new HashMap<String,ParamType>();
-for (ParamType pt : currentMechanism.getParams().getParam()) {
+HashMap<String,ParamWithValueType> params = new HashMap<String,ParamWithValueType>();
+for (ParamWithValueType pt : currentMechanism.getParams().getParam()) {
 	params.put(pt.getName(), pt);
 }
 
