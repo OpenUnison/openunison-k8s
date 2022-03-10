@@ -41,5 +41,5 @@ to interact with the API server, which means the dashboard runs without privileg
 
 ## Documentation
 
-How to deploy - https://openunison.github.io/deployauth/
-Blog - https://www.tremolosecurity.com/blog/bloghome
+* How to deploy - https://openunison.github.io/deployauth/
+* Blog - https://www.tremolosecurity.com/blog/bloghome
