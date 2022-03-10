@@ -25,16 +25,21 @@ generated.  The commands include certificates for your API server and OpenUnison
 
 ![dashboard login](https://openunison.github.io/assets/images/ou-login-portal.gif)
 
-##kubectl Plugin
+## kubectl Plugin
 
 Skip the portal and get straight into `kubectl` with OpenUnison's `oulogin` plugin.  This plugin will launch a browser for you, authenticate you, and generate your entire `kubectl` configuration without pre-distributing a configuration file.  Simple as `kubectl oulogin`!  
 
 ![oulogin](https://openunison.github.io/assets/images/ou-login-oulogin.gif)
 
 
-##Secure Access To the Dashboard
+## Secure Access To the Dashboard
 
 OpenUnison provides secure access to your dashboard without creating service accounts.  Your identity is used by the dashboard
 to interact with the API server, which means the dashboard runs without privileges of its own.
 
 ![dashboard login](https://openunison.github.io/assets/images/ou-login-dashboard.gif)
+
+## Documentation
+
+How to deploy - https://openunison.github.io/deployauth/
+Blog - https://www.tremolosecurity.com/blog/bloghome
