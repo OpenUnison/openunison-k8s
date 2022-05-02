@@ -19,10 +19,10 @@
 
   <properties>
     <openunison.version>1.0.30</openunison.version>
-    <mysql.version>8.0.28</mysql.version>
-    <qpid.version>1.3.0</qpid.version>
+    <mysql.version>8.0.29</mysql.version>
+    <qpid.version>1.6.0</qpid.version>
     <sqlserver.version>9.4.0.jre11</sqlserver.version>
-    <postgresql.version>42.3.3</postgresql.version>
+    <postgresql.version>42.3.4</postgresql.version>
     
   </properties>
 
