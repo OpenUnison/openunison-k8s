@@ -107,8 +107,7 @@
         <version>3.2.0</version>
         <configuration>
           <from>
-            <image>docker.io/mlbiam/openunison-jib-builder2:beta</image>
-            <!-- <image>docker.io/tremolosecurity/openunison-jib-builder2:latest</image> -->
+            <image>docker.io/tremolosecurity/openunison-jib-builder2:latest</image>
           </from>
           <container>
             <user>431</user>
