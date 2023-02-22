@@ -22,7 +22,7 @@
     <mysql.version>8.0.32</mysql.version>
     <qpid.version>1.8.0</qpid.version>
     <sqlserver.version>12.2.0.jre11</sqlserver.version>
-    <postgresql.version>42.5.3</postgresql.version>
+    <postgresql.version>42.5.4</postgresql.version>
     
   </properties>
 
