@@ -3,7 +3,7 @@
   <groupId>io.openunison</groupId>
   <artifactId>openunison-k8s</artifactId>
   <packaging>war</packaging>
-  <version>1.0.32</version>
+  <version>1.0.33</version>
   <name>openunison-k8s</name>
   <url>http://openunison.io</url>
   <repositories>
@@ -18,11 +18,11 @@
   </repositories>
 
   <properties>
-    <openunison.version>1.0.32</openunison.version>
-    <mysql.version>8.0.29</mysql.version>
-    <qpid.version>1.6.0</qpid.version>
-    <sqlserver.version>10.2.1.jre11</sqlserver.version>
-    <postgresql.version>42.4.0</postgresql.version>
+    <openunison.version>1.0.33</openunison.version>
+    <mysql.version>8.0.32</mysql.version>
+    <qpid.version>1.8.0</qpid.version>
+    <sqlserver.version>12.2.0.jre11</sqlserver.version>
+    <postgresql.version>42.5.4</postgresql.version>
     
   </properties>
 
@@ -30,6 +30,11 @@
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>unison-scalejs-operators</artifactId>
+      <version>${openunison.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.tremolosecurity.unison</groupId>
+      <artifactId>myvd-on-undertow</artifactId>
       <version>${openunison.version}</version>
     </dependency>
     <dependency>
