@@ -23,7 +23,7 @@
     <qpid.version>1.8.0</qpid.version>
     <sqlserver.version>12.2.0.jre11</sqlserver.version>
     <postgresql.version>42.6.0</postgresql.version>
-    <maridb.version>3.1.4</maridb.version>
+    <mariadb.version>3.1.4</mariadb.version>
   </properties>
 
   <dependencies>
