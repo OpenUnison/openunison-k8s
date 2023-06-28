@@ -23,7 +23,7 @@
     <qpid.version>1.8.0</qpid.version>
     <sqlserver.version>12.2.0.jre11</sqlserver.version>
     <postgresql.version>42.6.0</postgresql.version>
-    
+    <mariadb.version>3.1.4</mariadb.version>
   </properties>
 
   <dependencies>
@@ -80,7 +80,11 @@
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
     </dependency>
-    
+    <dependency>
+    <groupId>org.mariadb.jdbc</groupId>
+    <artifactId>mariadb-java-client</artifactId>
+    <version>${mariadb.version}</version>
+</dependency>
   </dependencies>
   <build>
     <plugins>
