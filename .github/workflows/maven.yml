@@ -68,3 +68,25 @@ jobs:
 
         docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:latest
         docker push ghcr.io/${{ env.REPO }}:latest
+
+    - name: sign images
+      run: |-
+          # cosign sign -y docker.io/${{ secrets.OU_CONTAINER_REPO }}/openunison-k8s:${{ env.TAG }}
+          cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+
+    - uses: anchore/sbom-action@v0
+      with:
+        image: ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        format: spdx
+        output-file: /tmp/spdxg
+
+    - name: attach sbom to images
+      run: |-
+        # cosign attach sbom --sbom /tmp/spdxd docker.io/${{ secrets.OU_CONTAINER_REPO }}/openunison-kubernetes-operator:${{ env.TAG }}
+        cosign attach sbom --sbom /tmp/spdxg ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+
+        # DH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' docker.io/${{ secrets.OU_CONTAINER_REPO }}/openunison-kubernetes-operator:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
+        GH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ghcr.io/${{ env.REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
+
+        # cosign sign -y docker.io/${{ secrets.OU_CONTAINER_REPO }}/openunison-kubernetes-operator:sha256-$DH_SBOM_SHA.sbom
+        cosign sign -y ghcr.io/${{ env.REPO }}:sha256-$GH_SBOM_SHA.sbom
