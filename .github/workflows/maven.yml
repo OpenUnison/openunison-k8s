@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - 'main'
+permissions:
+  id-token: write
+  packages: write
 
 jobs:
   build:
@@ -16,11 +19,96 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@main
+  
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - uses: actions/checkout@v1
+
+
+    - name: generate tag
+      run: |-
+        export PROJ_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Project Version: $PROJ_VERSION"
+        echo "TAG=$PROJ_VERSION-$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+        echo "SHORT_TAG=$PROJ_VERSION" >> $GITHUB_ENV
+
+    - name: Login to container Registry
+      uses: docker/login-action@v2
+      with:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+
+    -
+      name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.OU_REG_USER }}
+        password: ${{ secrets.OU_REG_PASSWORD }}
+
+    - name: downcase REPO
+      run: |
+        echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
+    
+
+
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: deploy with jib
-      env:
-        OU_CONTAINER_DEST: ${{ secrets.OU_CONTAINER_DEST }}
-        OU_REG_USER: ${{ secrets.OU_REG_USER }}
-        OU_REG_PASSWORD: ${{ secrets.OU_REG_PASSWORD }}
-      run: mvn compile jib:build --file pom.xml -Djib.httpTimeout=600000
+      
+      run: mvn compile jib:dockerBuild --file pom.xml -Djib.httpTimeout=600000 -Dimage=local/openunison-k8s
+
+    - name: tag and push
+      run: |
+        docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        docker push ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+
+        docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
+        docker push ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
+
+        docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:latest
+        docker push ghcr.io/${{ env.REPO }}:latest
+
+        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+        docker push ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+
+        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:${{ env.SHORT_TAG }}
+        docker push ${{ secrets.OU_CONTAINER_REPO }}:${{ env.SHORT_TAG }}
+
+        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:latest
+        docker push ${{ secrets.OU_CONTAINER_REPO }}:latest
+
+    - name: sign images
+      run: |-
+          cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+          cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+
+    - uses: anchore/sbom-action@v0
+      with:
+        image: ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        format: spdx
+        output-file: /tmp/spdxg
+
+    - uses: anchore/sbom-action@v0
+      with:
+          image: ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+          format: spdx
+          output-file: /tmp/spdxd
+
+    - name: attach sbom to images
+      run: |-
+        cosign attach sbom --sbom /tmp/spdxd ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+        cosign attach sbom --sbom /tmp/spdxg ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+
+        DH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
+        GH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ghcr.io/${{ env.REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
+
+        cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:sha256-$DH_SBOM_SHA.sbom
+        cosign sign -y ghcr.io/${{ env.REPO }}:sha256-$GH_SBOM_SHA.sbom

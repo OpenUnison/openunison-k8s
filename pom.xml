@@ -1,9 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.openunison</groupId>
   <artifactId>openunison-k8s</artifactId>
   <packaging>war</packaging>
-  <version>1.0.36</version>
+  <version>1.0.37</version>
   <name>openunison-k8s</name>
   <url>http://openunison.io</url>
   <repositories>
@@ -18,7 +20,7 @@
   </repositories>
 
   <properties>
-    <openunison.version>1.0.36</openunison.version>
+    <openunison.version>1.0.37</openunison.version>
     <mysql.version>8.0.32</mysql.version>
     <qpid.version>1.8.0</qpid.version>
     <sqlserver.version>12.2.0.jre11</sqlserver.version>
@@ -81,10 +83,10 @@
       <version>${postgresql.version}</version>
     </dependency>
     <dependency>
-    <groupId>org.mariadb.jdbc</groupId>
-    <artifactId>mariadb-java-client</artifactId>
-    <version>${mariadb.version}</version>
-</dependency>
+      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>mariadb-java-client</artifactId>
+      <version>${mariadb.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -117,6 +119,10 @@
         <configuration>
           <from>
             <image>docker.io/tremolosecurity/openunison-jib-builder2:latest</image>
+            <auth>
+              <username>${env.OU_REG_USER}</username>
+              <password>${env.OU_REG_PASSWORD}</password>
+            </auth>
           </from>
           <container>
             <user>431</user>
