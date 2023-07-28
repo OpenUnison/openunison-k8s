@@ -44,6 +44,13 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
 
+    -
+      name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.OU_REG_USER }}
+        password: ${{ secrets.OU_REG_PASSWORD }}
+
     - name: downcase REPO
       run: |
         echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
@@ -69,9 +76,18 @@ jobs:
         docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:latest
         docker push ghcr.io/${{ env.REPO }}:latest
 
+        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+        docker push ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+
+        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:${{ env.SHORT_TAG }}
+        docker push ${{ secrets.OU_CONTAINER_REPO }}:${{ env.SHORT_TAG }}
+
+        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:latest
+        docker push ${{ secrets.OU_CONTAINER_REPO }}:latest
+
     - name: sign images
       run: |-
-          # cosign sign -y docker.io/${{ secrets.OU_CONTAINER_REPO }}/openunison-k8s:${{ env.TAG }}
+          cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
           cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
 
     - uses: anchore/sbom-action@v0
@@ -80,13 +96,19 @@ jobs:
         format: spdx
         output-file: /tmp/spdxg
 
+    - uses: anchore/sbom-action@v0
+      with:
+          image: ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+          format: spdx
+          output-file: /tmp/spdxd
+
     - name: attach sbom to images
       run: |-
-        # cosign attach sbom --sbom /tmp/spdxd docker.io/${{ secrets.OU_CONTAINER_REPO }}/openunison-kubernetes-operator:${{ env.TAG }}
+        cosign attach sbom --sbom /tmp/spdxd ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
         cosign attach sbom --sbom /tmp/spdxg ghcr.io/${{ env.REPO }}:${{ env.TAG }}
 
-        # DH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' docker.io/${{ secrets.OU_CONTAINER_REPO }}/openunison-kubernetes-operator:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
+        DH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
         GH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ghcr.io/${{ env.REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
 
-        # cosign sign -y docker.io/${{ secrets.OU_CONTAINER_REPO }}/openunison-kubernetes-operator:sha256-$DH_SBOM_SHA.sbom
+        cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:sha256-$DH_SBOM_SHA.sbom
         cosign sign -y ghcr.io/${{ env.REPO }}:sha256-$GH_SBOM_SHA.sbom
