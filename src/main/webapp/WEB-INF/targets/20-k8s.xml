@@ -9,5 +9,6 @@
         <param name="tokenPath" value="/var/run/secrets/tokens/ou-token" />
         <param name="certPath" value="/var/run/secrets/tokens/ca.crt" />
         <param name="label" value="#[K8S_DEPLOYMENT_NAME:Local Deployment]" />
+        <param name="drqueues" value="#[K8S_DR_QUEUES]" />
     </params>
 </target>
