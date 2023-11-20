@@ -117,7 +117,7 @@
       <validationQuery>#[OU_JDBC_VALIDATION]</validationQuery>
       <notifier>#[openunison.notifier:default-smtp]</notifier>
     </approvalDB>
-    <org name="Kubernetes Enterprise" description="Kubernetes enterprise deployment" uuid="B158BD40-0C1B-11E3-8FFD-0800200C9A66">
+    <org name="#[openunison.k8s.tree.label:Kubernetes Enterprise]" description="#[openunison.k8s.tree.description:Kubernetes enterprise deployment]" uuid="B158BD40-0C1B-11E3-8FFD-0800200C9A66">
       <dynamicOrgs enabled="true" className="com.tremolosecurity.provisioning.orgs.LoadOrgsFromK8s">
         <params name="k8starget" value="k8s" />
         <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
