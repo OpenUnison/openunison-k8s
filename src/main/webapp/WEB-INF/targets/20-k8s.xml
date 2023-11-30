@@ -1,6 +1,6 @@
 <target name="k8s" className="com.tremolosecurity.unison.openshiftv3.OpenShiftTarget">
     <params>
-        <param name="url" value=""/>
+        <param name="url" value="#[K8S_API_SERVER_URL:https://kubernetes.default.svc]"/>
         <param name="userName" value=""/>
         <param name="password" value=""/>
         <param name="token" value=""/>
@@ -9,5 +9,6 @@
         <param name="tokenPath" value="/var/run/secrets/tokens/ou-token" />
         <param name="certPath" value="/var/run/secrets/tokens/ca.crt" />
         <param name="label" value="#[K8S_DEPLOYMENT_NAME:Local Deployment]" />
+        <param name="drqueues" value="#[K8S_DR_QUEUES]" />
     </params>
 </target>
