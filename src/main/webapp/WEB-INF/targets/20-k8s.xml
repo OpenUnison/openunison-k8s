@@ -11,4 +11,5 @@
         <param name="label" value="#[K8S_DEPLOYMENT_NAME:Local Deployment]" />
         <param name="drqueues" value="#[K8S_DR_QUEUES]" />
     </params>
+    <annotation name="tremolo.io/cluster-label" value="#[K8S_DEPLOYMENT_NAME:Local Deployment]" />
 </target>
