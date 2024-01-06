@@ -24,8 +24,8 @@
     <mysql.version>8.0.33</mysql.version>
     <qpid.version>1.11.0</qpid.version>
     <sqlserver.version>12.4.2.jre11</sqlserver.version>
-    <postgresql.version>42.7.0</postgresql.version>
-    <mariadb.version>3.1.4</mariadb.version>
+    <postgresql.version>42.7.1</postgresql.version>
+    <mariadb.version>3.3.2</mariadb.version>
   </properties>
 
   <dependencies>
