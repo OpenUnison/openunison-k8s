@@ -30,40 +30,28 @@ limitations under the License.
 		}	
 			%>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-<title></title>
-<!-- Bootstrap core CSS -->
-    <link href="<%= authURL %>css/bootstrap.min.css" rel="stylesheet" />
-
-    <!-- Custom styles for this template -->
-    <link href="<%= authURL %>jumbotron-narrow.css" rel="stylesheet" />
-
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!--  <script src="assets/js/ie10-viewport-bug-workaround.js"></script>  -->
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+<meta charset="UTF-8">
+	<title>OpenUnison Logout</title>
+	<link rel="stylesheet" href="css-material/style.css">
 </head>
 <body>
+
 <div class="container">
-<div class="login-header">
-			<h3>Logged Out of Unison</h3>	
+
+		<center>
+			<img src="images/ts_logo.png" />
+		</center>
+		<h1>Login Complete</h1>
+
+		<span><center>You may close this window.</center></span>
+		
+		<div class="button-container">
+			<button onClick="window.close();" class="button" id="login"
+				name="login">
+				<span>Close this window</span>
+			</button>
 		</div>
-		<div class="jumbotron">
-			<img src="<%= authURL %>images/ts_logo.png" />
-			<br />
-			<h2>Login Complete</h2>
-<h3>You may close this window</h3>
-		</div>
+
 	</div>
 
 
