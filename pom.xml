@@ -33,16 +33,19 @@
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>unison-scalejs-operators</artifactId>
       <version>${openunison.version}</version>
+      
     </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>myvd-on-undertow</artifactId>
       <version>${openunison.version}</version>
+      
     </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>openunison-on-undertow</artifactId>
       <version>${openunison.version}</version>
+      
     </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
@@ -109,7 +112,11 @@
               <artifactId>open-unison-webapp</artifactId>
             </overlay>
           </overlays>
-          <packagingExcludes>WEB-INF/lib/log4j*2.14.1.jar</packagingExcludes>
+          <packagingExcludes>
+            WEB-INF/lib/log4j*2.14.1.jar,
+            WEB-INF/lib/jldap*2009-10-07.jar
+          </packagingExcludes>
+          
         </configuration>
       </plugin>
       <plugin>
