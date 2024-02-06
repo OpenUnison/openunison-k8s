@@ -98,7 +98,7 @@ public class CreateLocalUsers implements Insert {
 
 		Session session = sessionFactory.openSession();
 
-		List<LocalGroup> groups = session.createCriteria(LocalGroup.class).list();
+		List<LocalGroup> groups = session.createQuery("FROM LocalGroup",LocalGroup.class).list();
 		if (groups.size() == 0) {
 			session.beginTransaction();
 			LocalGroup admins = new LocalGroup();

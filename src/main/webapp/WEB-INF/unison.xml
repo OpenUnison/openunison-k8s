@@ -58,7 +58,8 @@
         <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
 
       </dynamicTargets>
-      <target name="k8s" className="com.tremolosecurity.unison.openshiftv3.OpenShiftTarget">
+      @[dir:targets]
+      <!-- <target name="k8s" className="com.tremolosecurity.unison.openshiftv3.OpenShiftTarget">
         <params>
           <param name="url" value="" />
           <param name="userName" value="" />
@@ -70,7 +71,7 @@
           <param name="certPath" value="/var/run/secrets/tokens/ca.crt" />
           <param name="label" value="#[K8S_DEPLOYMENT_NAME:Local Deployment]" />
         </params>
-      </target>
+      </target> -->
     </targets>
     <workflows>
       <dynamicWorkflows enabled="true" className="com.tremolosecurity.provisioning.workflows.LoadWorkflowsFromK8s">
