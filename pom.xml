@@ -90,6 +90,11 @@
       <artifactId>mariadb-java-client</artifactId>
       <version>${mariadb.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.tremolosecurity.unison</groupId>
+      <artifactId>chooseamq</artifactId>
+      <version>${openunison.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
