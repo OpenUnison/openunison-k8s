@@ -125,11 +125,7 @@
         <version>3.4.0</version>
         <configuration>
           <from>
-            <image>docker.io/tremolosecurity/openunison-jib-builder2:latest</image>
-            <auth>
-              <username>${env.OU_REG_USER}</username>
-              <password>${env.OU_REG_PASSWORD}</password>
-            </auth>
+            <image>ghcr.io/tremolosecurity/openunison-jib-builder3:latest</image>
           </from>
           <container>
             <user>431</user>
