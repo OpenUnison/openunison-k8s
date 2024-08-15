@@ -5,7 +5,7 @@
   <groupId>io.openunison</groupId>
   <artifactId>openunison-k8s</artifactId>
   <packaging>war</packaging>
-  <version>1.0.40</version>
+  <version>1.0.41</version>
   <name>openunison-k8s</name>
   <url>http://openunison.io</url>
   <repositories>
@@ -20,12 +20,11 @@
   </repositories>
 
   <properties>
-    <openunison.version>1.0.40</openunison.version>
+    <openunison.version>1.0.41</openunison.version>
     <mysql.version>8.0.33</mysql.version>
-    <qpid.version>1.11.0</qpid.version>
-    <sqlserver.version>12.6.1.jre11</sqlserver.version>
-    <postgresql.version>42.7.2</postgresql.version>
-    <mariadb.version>3.3.2</mariadb.version>
+    <sqlserver.version>12.8.0.jre11</sqlserver.version>
+    <postgresql.version>42.7.3</postgresql.version>
+    <mariadb.version>3.4.1</mariadb.version>
   </properties>
 
   <dependencies>
@@ -70,11 +69,7 @@
       <artifactId>unison-scalejs-main</artifactId>
       <version>${openunison.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.qpid</groupId>
-      <artifactId>qpid-jms-client</artifactId>
-      <version>${qpid.version}</version>
-    </dependency>
+    
     <dependency>
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>mssql-jdbc</artifactId>
@@ -100,10 +95,10 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.8.1</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>21</source>
+          <target>21</target>
         </configuration>
       </plugin>
       <plugin>
@@ -127,14 +122,10 @@
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.3</version>
         <configuration>
           <from>
-            <image>docker.io/tremolosecurity/openunison-jib-builder2:latest</image>
-            <auth>
-              <username>${env.OU_REG_USER}</username>
-              <password>${env.OU_REG_PASSWORD}</password>
-            </auth>
+            <image>ghcr.io/tremolosecurity/openunison-jib-builder3:latest</image>
           </from>
           <container>
             <user>431</user>
