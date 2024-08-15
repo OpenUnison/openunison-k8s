@@ -19,7 +19,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: "21"
-        distribution: corretto
+        distribution: microsoft
 
     - name: Install Cosign
       uses: sigstore/cosign-installer@main
