@@ -22,7 +22,6 @@
   <properties>
     <openunison.version>1.0.41</openunison.version>
     <mysql.version>8.0.33</mysql.version>
-    <qpid.version>2.5.0</qpid.version>
     <sqlserver.version>12.8.0.jre11</sqlserver.version>
     <postgresql.version>42.7.3</postgresql.version>
     <mariadb.version>3.4.1</mariadb.version>
@@ -95,10 +94,10 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.8.1</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>21</source>
+          <target>21</target>
         </configuration>
       </plugin>
       <plugin>
@@ -122,7 +121,7 @@
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.3</version>
         <configuration>
           <from>
             <image>ghcr.io/tremolosecurity/openunison-jib-builder3:latest</image>
