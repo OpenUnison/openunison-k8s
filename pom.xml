@@ -69,11 +69,7 @@
       <artifactId>unison-scalejs-main</artifactId>
       <version>${openunison.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.qpid</groupId>
-      <artifactId>qpid-jms-client</artifactId>
-      <version>${qpid.version}</version>
-    </dependency>
+    
     <dependency>
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>mssql-jdbc</artifactId>
