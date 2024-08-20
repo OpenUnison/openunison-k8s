@@ -10,6 +10,7 @@
         <param name="certPath" value="/var/run/secrets/tokens/ca.crt" />
         <param name="label" value="#[K8S_DEPLOYMENT_NAME:Local Deployment]" />
         <param name="drqueues" value="#[K8S_DR_QUEUES]" />
+        <param name="gitUrl" value="#[K8S_GIT_URL:]" />
     </params>
     <annotation name="tremolo.io/cluster-label" value="#[K8S_DEPLOYMENT_NAME:Local Deployment]" />
 </target>
