@@ -45,12 +45,12 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
 
-    -
-      name: Login to DockerHub
-      uses: docker/login-action@v1 
-      with:
-        username: ${{ secrets.OU_REG_USER }}
-        password: ${{ secrets.OU_REG_PASSWORD }}
+    # -
+    #   name: Login to DockerHub
+    #   uses: docker/login-action@v1 
+    #   with:
+    #     username: ${{ secrets.OU_REG_USER }}
+    #     password: ${{ secrets.OU_REG_PASSWORD }}
 
     - name: downcase REPO
       run: |
