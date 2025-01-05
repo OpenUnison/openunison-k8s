@@ -64,52 +64,56 @@ jobs:
       run: mvn -B package --file pom.xml
     - name: deploy with jib
       
-      run: mvn compile jib:dockerBuild --file pom.xml -Djib.httpTimeout=600000 -Dimage=local/openunison-k8s
+      run: mvn compile jib:build --file pom.xml -Djib.httpTimeout=600000
+      env:
+        OU_CONTAINER_DEST: "ghcr.io/${{ env.REPO }}:${{ env.TAG }}"
+        OU_REG_USER: "${{ github.repository_owner }}"
+        OU_REG_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
 
-    - name: tag and push
-      run: |
-        docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:${{ env.TAG }}
-        docker push ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    # - name: tag and push
+    #   run: |
+    #     docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    #     docker push ghcr.io/${{ env.REPO }}:${{ env.TAG }}
 
-        docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
-        docker push ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
+    #     docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
+    #     docker push ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
 
-        docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:latest
-        docker push ghcr.io/${{ env.REPO }}:latest
+    #     docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:latest
+    #     docker push ghcr.io/${{ env.REPO }}:latest
 
-        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
-        docker push ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+    #     docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+    #     docker push ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
 
-        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:${{ env.SHORT_TAG }}
-        docker push ${{ secrets.OU_CONTAINER_REPO }}:${{ env.SHORT_TAG }}
+    #     docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:${{ env.SHORT_TAG }}
+    #     docker push ${{ secrets.OU_CONTAINER_REPO }}:${{ env.SHORT_TAG }}
 
-        docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:latest
-        docker push ${{ secrets.OU_CONTAINER_REPO }}:latest
+    #     docker tag local/openunison-k8s ${{ secrets.OU_CONTAINER_REPO }}:latest
+    #     docker push ${{ secrets.OU_CONTAINER_REPO }}:latest
 
-    - name: sign images
-      run: |-
-          cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
-          cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    # - name: sign images
+    #   run: |-
+    #       cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+    #       cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
 
-    - uses: anchore/sbom-action@v0
-      with:
-        image: ghcr.io/${{ env.REPO }}:${{ env.TAG }}
-        format: spdx
-        output-file: /tmp/spdxg
+    # - uses: anchore/sbom-action@v0
+    #   with:
+    #     image: ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    #     format: spdx
+    #     output-file: /tmp/spdxg
 
-    - uses: anchore/sbom-action@v0
-      with:
-          image: ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
-          format: spdx
-          output-file: /tmp/spdxd
+    # - uses: anchore/sbom-action@v0
+    #   with:
+    #       image: ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+    #       format: spdx
+    #       output-file: /tmp/spdxd
 
-    - name: attach sbom to images
-      run: |-
-        cosign attach sbom --sbom /tmp/spdxd ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
-        cosign attach sbom --sbom /tmp/spdxg ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    # - name: attach sbom to images
+    #   run: |-
+    #     cosign attach sbom --sbom /tmp/spdxd ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
+    #     cosign attach sbom --sbom /tmp/spdxg ghcr.io/${{ env.REPO }}:${{ env.TAG }}
 
-        DH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
-        GH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ghcr.io/${{ env.REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
+    #     DH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
+    #     GH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ghcr.io/${{ env.REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
 
-        cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:sha256-$DH_SBOM_SHA.sbom
-        cosign sign -y ghcr.io/${{ env.REPO }}:sha256-$GH_SBOM_SHA.sbom
+    #     cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:sha256-$DH_SBOM_SHA.sbom
+    #     cosign sign -y ghcr.io/${{ env.REPO }}:sha256-$GH_SBOM_SHA.sbom
