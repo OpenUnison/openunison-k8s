@@ -72,7 +72,7 @@ jobs:
 
     - name: sign images
       run: |-
-          docker pull
+          docker pull ghcr.io/${{ env.REPO }}:${{ env.TAG }}
           cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
     
     - uses: anchore/sbom-action@v0
