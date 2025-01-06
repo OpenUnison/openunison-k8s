@@ -70,6 +70,23 @@ jobs:
         OU_REG_USER: "${{ github.repository_owner }}"
         OU_REG_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
 
+    - name: sign images
+      run: |-
+          docker pull
+          cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    
+    - uses: anchore/sbom-action@v0
+      with:
+        image: ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        format: spdx
+        output-file: /tmp/spdxg
+
+    - name: attach sbom to images
+      run: |-
+        cosign attach sbom --sbom /tmp/spdxg ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        GH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ghcr.io/${{ env.REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
+        cosign sign -y ghcr.io/${{ env.REPO }}:sha256-$GH_SBOM_SHA.sbom
+
     # - name: tag and push
     #   run: |
     #     docker tag local/openunison-k8s ghcr.io/${{ env.REPO }}:${{ env.TAG }}
@@ -95,11 +112,7 @@ jobs:
     #       cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
     #       cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
 
-    # - uses: anchore/sbom-action@v0
-    #   with:
-    #     image: ghcr.io/${{ env.REPO }}:${{ env.TAG }}
-    #     format: spdx
-    #     output-file: /tmp/spdxg
+    
 
     # - uses: anchore/sbom-action@v0
     #   with:
