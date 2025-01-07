@@ -117,7 +117,7 @@
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
-        <version>3.4.2</version>
+        <version>3.4.4</version>
         <configuration>
           <from>
             <image>ghcr.io/tremolosecurity/openunison-jib-builder3:latest</image>
