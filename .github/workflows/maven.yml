@@ -70,16 +70,16 @@ jobs:
         OU_REG_USER: "${{ github.repository_owner }}"
         OU_REG_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
 
-    - name: sign images
-      run: |-
-          docker pull ghcr.io/${{ env.REPO }}:${{ env.TAG }}
-          cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    # - name: sign images
+    #   run: |-
+    #       docker pull ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    #       cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
     
-    - uses: anchore/sbom-action@v0
-      with:
-        image: ghcr.io/${{ env.REPO }}:${{ env.TAG }}
-        format: spdx
-        output-file: /tmp/spdxg
+    # - uses: anchore/sbom-action@v0
+    #   with:
+    #     image: ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    #     format: spdx
+    #     output-file: /tmp/spdxg
 
     - name: attach sbom to images
       run: |-
