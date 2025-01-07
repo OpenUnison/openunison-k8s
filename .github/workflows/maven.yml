@@ -70,10 +70,10 @@ jobs:
         OU_REG_USER: "${{ github.repository_owner }}"
         OU_REG_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
 
-    # - name: sign images
-    #   run: |-
-    #       docker pull ghcr.io/${{ env.REPO }}:${{ env.TAG }}
-    #       cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+    #  - name: sign images
+    #    run: |-
+    #        
+    #        cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
     
     # - uses: anchore/sbom-action@v0
     #   with:
@@ -81,11 +81,12 @@ jobs:
     #     format: spdx
     #     output-file: /tmp/spdxg
 
-    - name: attach sbom to images
+    - name: tag images to short tag and latest
       run: |-
         # cosign attach sbom --sbom /tmp/spdxg ghcr.io/${{ env.REPO }}:${{ env.TAG }}
         # GH_SBOM_SHA=$(cosign verify --certificate-oidc-issuer-regexp='.*' --certificate-identity-regexp='.*' ghcr.io/${{ env.REPO }}:${{ env.TAG }} 2>/dev/null | jq -r '.[0].critical.image["docker-manifest-digest"]' | cut -c 8-)
         # cosign sign -y ghcr.io/${{ env.REPO }}:sha256-$GH_SBOM_SHA.sbom
+        docker pull ghcr.io/${{ env.REPO }}:${{ env.TAG }}
         docker tag ghcr.io/${{ env.REPO }}:${{ env.TAG }} ghcr.io/${{ env.REPO }}:latest
         docker push ghcr.io/${{ env.REPO }}:latest
         docker tag ghcr.io/${{ env.REPO }}:${{ env.TAG }} ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
