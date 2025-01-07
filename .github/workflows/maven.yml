@@ -88,6 +88,8 @@ jobs:
         cosign sign -y ghcr.io/${{ env.REPO }}:sha256-$GH_SBOM_SHA.sbom
         docker tag ghcr.io/${{ env.REPO }}:${{ env.TAG }} ghcr.io/${{ env.REPO }}:latest
         docker push ghcr.io/${{ env.REPO }}:latest
+        docker tag ghcr.io/${{ env.REPO }}:${{ env.TAG }} ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
+        docker push ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
 
     # - name: tag and push
     #   run: |
