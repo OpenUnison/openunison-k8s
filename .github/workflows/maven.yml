@@ -74,11 +74,11 @@ jobs:
         docker pull --platform linux/arm64 ghcr.io/${{ env.REPO }}:${{ env.TAG }}
         
         skopeo copy --all \
-        docker://ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        docker://ghcr.io/${{ env.REPO }}:${{ env.TAG }} \
         docker://ghcr.io/${{ env.REPO }}:latest
 
         skopeo copy --all \
-        docker://ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        docker://ghcr.io/${{ env.REPO }}:${{ env.TAG }} \
         docker://ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
         
 
