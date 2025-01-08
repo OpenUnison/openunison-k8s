@@ -86,7 +86,6 @@ jobs:
 
     - name: sign images
       run: |-
-            cosign sign -y ${{ secrets.OU_CONTAINER_REPO }}:${{ env.TAG }}
             cosign sign -y ghcr.io/${{ env.REPO }}:${{ env.TAG }}
 
     - uses: anchore/sbom-action@v0
