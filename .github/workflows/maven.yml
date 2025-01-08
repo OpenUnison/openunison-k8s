@@ -66,7 +66,8 @@ jobs:
     
     - name: tag images to short tag and latest
       run: |-
-        docker pull ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        docker pull --platform linux/amd64 ghcr.io/${{ env.REPO }}:${{ env.TAG }}
+        docker pull --platform linux/arm64 ghcr.io/${{ env.REPO }}:${{ env.TAG }}
         docker tag ghcr.io/${{ env.REPO }}:${{ env.TAG }} ghcr.io/${{ env.REPO }}:latest
         docker push ghcr.io/${{ env.REPO }}:latest
         docker tag ghcr.io/${{ env.REPO }}:${{ env.TAG }} ghcr.io/${{ env.REPO }}:${{ env.SHORT_TAG }}
