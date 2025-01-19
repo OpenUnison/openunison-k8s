@@ -87,8 +87,8 @@
       <url>#[OU_JDBC_URL]</url>
       <user>#[OU_JDBC_USER]</user>
       <password>#[OU_JDBC_PASSWORD]</password>
-      <maxConns>10</maxConns>
-      <maxIdleConns>10</maxIdleConns>
+      <maxConns>#[openunison.maxcons:10]</maxConns>
+      <maxIdleConns>#[openunison.maxidlecons:10]</maxIdleConns>
       <userIdAttribute>uid</userIdAttribute>
       <approverAttributes>
         <value>uid</value>
