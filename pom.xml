@@ -32,19 +32,46 @@
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>unison-scalejs-operators</artifactId>
       <version>${openunison.version}</version>
-      
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>myvd-on-undertow</artifactId>
       <version>${openunison.version}</version>
-      
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>openunison-on-undertow</artifactId>
       <version>${openunison.version}</version>
-      
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
@@ -52,12 +79,32 @@
       <version>${openunison.version}</version>
       <type>war</type>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>open-unison-webapp</artifactId>
       <version>${openunison.version}</version>
       <type>pom</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>
@@ -68,6 +115,16 @@
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>unison-scalejs-main</artifactId>
       <version>${openunison.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     
     <dependency>
@@ -84,6 +141,11 @@
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
       <version>${mariadb.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.19.1</version>
     </dependency>
   </dependencies>
   <build>
@@ -110,6 +172,8 @@
           <packagingExcludes>
             WEB-INF/lib/log4j*2.14.1.jar,
             WEB-INF/lib/jldap-2009-10-07.jar
+            WEB-INF/lib/jboss-logging-*.Final.jar
+            WEB-INF/lib/jackson-annotations-2.17.0.jar
           </packagingExcludes>
           
         </configuration>
