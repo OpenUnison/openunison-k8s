@@ -171,10 +171,10 @@
 
 
   </provisioning>
-  <!--<notifications>
+  <notifications>
     <dynamicNotifications enabled="true" className="com.tremolosecurity.proxy.dynamicconfiguration.LoadNotifiersFromK8s">
       <params name="k8starget" value="k8s" />
       <params name="namespace" value="#[K8S_OPENUNISON_NS:openunison]" />
     </dynamicNotifications>
-  </notifications>-->
+  </notifications>
 </tremoloConfig>
