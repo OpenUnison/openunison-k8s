@@ -5,7 +5,7 @@
   <groupId>io.openunison</groupId>
   <artifactId>openunison-k8s</artifactId>
   <packaging>war</packaging>
-  <version>1.0.43.1</version>
+  <version>1.0.44</version>
   <name>openunison-k8s</name>
   <url>http://openunison.io</url>
   <repositories>
@@ -20,11 +20,11 @@
   </repositories>
 
   <properties>
-    <openunison.version>1.0.43.1</openunison.version>
+    <openunison.version>1.0.44</openunison.version>
     <mysql.version>8.0.33</mysql.version>
-    <sqlserver.version>13.2.0.jre11</sqlserver.version>
-    <postgresql.version>42.7.8</postgresql.version>
-    <mariadb.version>3.5.6</mariadb.version>
+    <sqlserver.version>13.2.1.jre11</sqlserver.version>
+    <postgresql.version>42.7.9</postgresql.version>
+    <mariadb.version>3.5.7</mariadb.version>
   </properties>
 
   <dependencies>
@@ -181,7 +181,7 @@
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
-        <version>3.4.4</version>
+        <version>3.5.1</version>
         <configuration>
           <from>
             <image>ghcr.io/tremolosecurity/openunison-jib-builder3:latest</image>
