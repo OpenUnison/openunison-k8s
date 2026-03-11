@@ -176,3 +176,5 @@ Automatic Update - 20260218T020817.702Z
 Automatic Update - 20260220T020812.554Z
 Automatic Update - 20260227T020813.714Z
 Automatic Update - 20260306T020808.382Z
+
+Force rebuild
