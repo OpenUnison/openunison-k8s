@@ -5,7 +5,7 @@
   <groupId>io.openunison</groupId>
   <artifactId>openunison-k8s</artifactId>
   <packaging>war</packaging>
-  <version>1.0.47</version>
+  <version>1.0.48</version>
   <name>openunison-k8s</name>
   <url>http://openunison.io</url>
   <repositories>
@@ -20,7 +20,7 @@
   </repositories>
 
   <properties>
-    <openunison.version>1.0.47</openunison.version>
+    <openunison.version>1.0.48</openunison.version>
     <mysql.version>8.0.33</mysql.version>
     <sqlserver.version>13.4.0.jre11</sqlserver.version>
     <postgresql.version>42.7.10</postgresql.version>
