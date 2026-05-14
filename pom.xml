@@ -23,9 +23,36 @@
     <openunison.version>1.0.48</openunison.version>
     <mysql.version>8.0.33</mysql.version>
     <sqlserver.version>13.4.0.jre11</sqlserver.version>
-    <postgresql.version>42.7.10</postgresql.version>
+    <postgresql.version>42.7.11</postgresql.version>
     <mariadb.version>3.5.8</mariadb.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- CVE remediation: force fixed versions of transitive deps. -->
+      <!-- Apache MINA 2.1.10 -> 2.1.12 (4 CRITICAL: GHSA-995c-6rp3-4m4x, vf5j-865m-mq7c, f2wh-grmh-r6jm, 8297-v2rf-2p32). -->
+      <dependency>
+        <groupId>org.apache.mina</groupId>
+        <artifactId>mina-core</artifactId>
+        <version>2.1.12</version>
+      </dependency>
+      <!-- Netty 4.2.12 / 4.1.130 -> 4.2.13.Final (4 HIGH: GHSA-mj4r-2hfc-f8p6, 57rv-r2g8-2cj3, f6hv-jmp6-3vwv, rwm7-x88c-3g2p). -->
+      <!-- Run `mvn dependency:tree -Dincludes=io.netty` after build to confirm no 4.1.x epoll jar is still pulled transitively. -->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>4.2.13.Final</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- protobuf-java 3.21.9 -> 3.25.5 (HIGH: GHSA-735f-pc8j-v9w8). -->
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>3.25.5</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -111,6 +138,12 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>${mysql.version}</version>
     </dependency>
+    <!-- Direct dep so Maven packages 2.1.12 in WEB-INF/lib (version inherited from dependencyManagement). -->
+    <!-- The overlay's bundled mina-core-2.1.10.jar is stripped via packagingExcludes. -->
+    <dependency>
+      <groupId>org.apache.mina</groupId>
+      <artifactId>mina-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
       <artifactId>unison-scalejs-main</artifactId>
@@ -167,9 +200,11 @@
           </overlays>
           <packagingExcludes>
             WEB-INF/lib/log4j*2.14.1.jar,
-            WEB-INF/lib/jldap-2009-10-07.jar
-            WEB-INF/lib/jboss-logging-*.Final.jar
-            WEB-INF/lib/jackson-annotations-2.17.0.jar
+            WEB-INF/lib/jldap-2009-10-07.jar,
+            WEB-INF/lib/jboss-logging-*.Final.jar,
+            WEB-INF/lib/jackson-annotations-2.17.0.jar,
+            WEB-INF/lib/checker-*.jar,
+            WEB-INF/lib/mina-core-2.1.10.jar
           </packagingExcludes>
           
         </configuration>
