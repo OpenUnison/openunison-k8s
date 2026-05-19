@@ -180,7 +180,7 @@
         <version>3.5.1</version>
         <configuration>
           <from>
-            <image>>ghcr.io/tremolosecurity/openunison-jib-builder3:3-84a944</image>
+            <image>ghcr.io/tremolosecurity/openunison-jib-builder3:3-84a944</image>
             <platforms>
               <platform>
                 <architecture>amd64</architecture>
