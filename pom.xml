@@ -5,7 +5,7 @@
   <groupId>io.openunison</groupId>
   <artifactId>openunison-k8s</artifactId>
   <packaging>war</packaging>
-  <version>1.0.50</version>
+  <version>1.0.51</version>
   <name>openunison-k8s</name>
   <url>http://openunison.io</url>
   <repositories>
@@ -20,11 +20,11 @@
   </repositories>
 
   <properties>
-    <openunison.version>1.0.50</openunison.version>
-    <mysql.version>9.7.0</mysql.version>
+    <openunison.version>1.0.51</openunison.version>
+    <mysql.version>26.7.0</mysql.version>
     <sqlserver.version>13.4.0.jre11</sqlserver.version>
-    <postgresql.version>42.7.11</postgresql.version>
-    <mariadb.version>3.5.8</mariadb.version>
+    <postgresql.version>42.7.13</postgresql.version>
+    <mariadb.version>3.5.10</mariadb.version>
   </properties>
 
   <dependencies>
@@ -72,6 +72,23 @@
           <artifactId>jackson-annotations</artifactId>
         </exclusion>
       </exclusions>
+      
+    </dependency>
+    <dependency>
+      <groupId>com.tremolosecurity.unison</groupId>
+      <artifactId>unison-idp-openidconnect</artifactId>
+      <version>${openunison.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.tremolosecurity.unison</groupId>
