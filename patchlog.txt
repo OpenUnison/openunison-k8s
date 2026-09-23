@@ -197,6 +197,8 @@ Automatic Update - 20260529T020928.738Z
 Automatic Update - 20260604T020939.348Z
 Automatic Update - 20260909T153019.682Z
 
+force rebuild for CVE-2026-58016
+
 Force rebuild for 1.0.51-2026090901
 
 Automatic Update - 20260913T021002.801Z
