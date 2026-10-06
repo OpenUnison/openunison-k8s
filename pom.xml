@@ -22,7 +22,7 @@
   <properties>
     <openunison.version>1.0.53</openunison.version>
     <mysql.version>26.7.0</mysql.version>
-    <sqlserver.version>13.4.0.jre11</sqlserver.version>
+    <sqlserver.version>13.6.0.jre11</sqlserver.version>
     <postgresql.version>42.7.13</postgresql.version>
     <mariadb.version>3.5.10</mariadb.version>
   </properties>
