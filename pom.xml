@@ -5,7 +5,7 @@
   <groupId>io.openunison</groupId>
   <artifactId>openunison-k8s</artifactId>
   <packaging>war</packaging>
-  <version>1.0.53</version>
+  <version>1.0.54</version>
   <name>openunison-k8s</name>
   <url>http://openunison.io</url>
   <repositories>
@@ -20,11 +20,11 @@
   </repositories>
 
   <properties>
-    <openunison.version>1.0.53</openunison.version>
-    <mysql.version>26.7.0</mysql.version>
-    <sqlserver.version>13.6.0.jre11</sqlserver.version>
-    <postgresql.version>42.7.13</postgresql.version>
-    <mariadb.version>3.5.10</mariadb.version>
+    <openunison.version>1.0.54</openunison.version>
+    <mysql.version>26.10.0</mysql.version>
+    <sqlserver.version>13.6.2.jre11</sqlserver.version>
+    <postgresql.version>42.7.14</postgresql.version>
+    <mariadb.version>4.0.0</mariadb.version>
   </properties>
 
   <dependencies>
